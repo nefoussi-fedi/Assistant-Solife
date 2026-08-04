@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  solife-flask:
+    build: .
+    container_name: solife-flask-container
+    ports:
+      - "5000:5000"
+    environment:
+      # Important : ces URLs sont utilisées par le NAVIGATEUR (JavaScript
+      # exécuté sur votre PC), pas par le conteneur Flask lui-même.
+      # Le navigateur ne connaît pas les noms de conteneurs Docker
+      # ("n8n-container") — il faut donc garder "localhost", en supposant
+      # que le port 5678 de n8n est bien publié sur votre machine
+      # (ce qui est déjà le cas d'après vos tests précédents).
+      - CHAT_WEBHOOK_URL=http://localhost:5678/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat
+      - LOGIN_WEBHOOK_URL=http://localhost:5678/webhook/solife-login
+    networks:
+      - solife-network
+    restart: unless-stopped
+
+networks:
+  solife-network:
+    # "external: true" veut dire : n'essaie pas de créer ce réseau,
+    # il existe déjà (créé par vos conteneurs n8n/MongoDB/Qdrant).
+    external: true

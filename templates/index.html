@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solife — Assistant Client</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg: #0a0509;
+    --bg-2: #150a12;
+    --panel: #17101a;
+    --panel-2: #1f1520;
+    --red: #ea3b52;
+    --violet: #9b5cf6;
+    --white: #f5f0f2;
+    --muted: #a89aa4;
+    --border: rgba(245,240,242,0.09);
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: var(--bg);
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--white);
+    overflow:hidden;
+  }
+  .app{
+    position:relative;
+    height:100vh;
+    width:100vw;
+  }
+
+  /* ---------- LOGIN SCREEN ---------- */
+  #loginScreen{
+    position:absolute; inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(ellipse 55% 55% at 30% 30%, rgba(155,92,246,0.18), transparent 60%),
+      radial-gradient(ellipse 45% 45% at 25% 70%, rgba(234,59,82,0.16), transparent 65%),
+      var(--bg);
+    transition: opacity .5s ease, visibility .5s ease;
+    z-index: 30;
+  }
+  #loginScreen.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .login-card{
+    width: 92%;
+    max-width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 40px 34px 34px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+  }
+  .login-logo{
+    display:flex;
+    align-items:baseline;
+    gap: 2px;
+    justify-content:center;
+    margin-bottom: 6px;
+  }
+  .login-logo .slash{
+    color: var(--red);
+    font-size: 30px;
+    font-weight: 800;
+    line-height:1;
+  }
+  .login-logo .word{
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .login-sub{
+    text-align:center;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+  .field{
+    margin-bottom: 16px;
+  }
+  .field label{
+    display:block;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 7px;
+    letter-spacing: 0.3px;
+  }
+  .field input{
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 11px 13px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  .field input:focus{
+    border-color: var(--violet);
+  }
+  .login-btn{
+    width: 100%;
+    background: linear-gradient(135deg, var(--red), var(--violet));
+    color: white;
+    border: none;
+    padding: 13px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    margin-top: 6px;
+    transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    box-shadow: 0 8px 24px rgba(234,59,82,0.25);
+  }
+  .login-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(234,59,82,0.35);
+  }
+  .login-btn:disabled{
+    opacity: 0.55;
+    cursor:not-allowed;
+    transform:none;
+    box-shadow:none;
+  }
+  .login-error{
+    display:none;
+    font-size: 12.5px;
+    color: var(--red);
+    background: rgba(234,59,82,0.1);
+    border: 1px solid rgba(234,59,82,0.3);
+    padding: 10px 12px;
+    border-radius: 7px;
+    margin-bottom: 16px;
+    line-height:1.5;
+  }
+  .login-error.visible{ display:block; }
+  .login-hint{
+    text-align:center;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 22px;
+    line-height:1.6;
+  }
+
+  /* ---------- WELCOME SCREEN ---------- */
+  #welcome{
+    position:absolute; inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(ellipse 60% 55% at 68% 45%, rgba(155,92,246,0.20), transparent 60%),
+      radial-gradient(ellipse 45% 45% at 72% 50%, rgba(234,59,82,0.18), transparent 65%),
+      var(--bg);
+    transition: opacity .5s ease, visibility .5s ease;
+    z-index: 20;
+  }
+  #welcome.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .welcome-inner{
+    display:flex;
+    align-items:center;
+    max-width: 1040px;
+    width:92%;
+    gap: 60px;
+  }
+  .welcome-copy{
+    flex: 1 1 420px;
+  }
+  .eyebrow{
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+  .logo-row{
+    display:flex;
+    align-items:baseline;
+    gap: 2px;
+    margin-bottom: 18px;
+  }
+  .logo-row .slash{
+    color: var(--red);
+    font-size: 44px;
+    font-weight: 800;
+    line-height:1;
+  }
+  .logo-row .word{
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo-row .tm{
+    font-size: 14px;
+    color: var(--muted);
+    align-self:flex-start;
+    margin-top: 4px;
+  }
+  .tagline{
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 34px;
+  }
+  .welcome-copy h1{
+    font-size: 30px;
+    line-height: 1.35;
+    font-weight: 600;
+    margin: 0 0 18px;
+    color: var(--white);
+  }
+  .welcome-copy p{
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin: 0 0 34px;
+    max-width: 420px;
+  }
+  .start-btn{
+    background: linear-gradient(135deg, var(--red), var(--violet));
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 14.5px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: transform .15s ease, box-shadow .15s ease;
+    box-shadow: 0 8px 24px rgba(234,59,82,0.25);
+  }
+  .start-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 12px 30px rgba(234,59,82,0.35);
+  }
+  .welcome-visual{
+    flex: 1 1 400px;
+    display:flex;
+    justify-content:center;
+  }
+  .welcome-visual img{
+    width: 100%;
+    max-width: 440px;
+    border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+  }
+
+  @media (max-width: 860px){
+    .welcome-inner{ flex-direction:column; gap: 34px; text-align:center; }
+    .welcome-copy p{ margin-left:auto; margin-right:auto; }
+    .logo-row{ justify-content:center; }
+  }
+
+  /* ---------- CHAT SCREEN ---------- */
+  #chatScreen{
+    position:absolute; inset:0;
+    display:flex;
+    flex-direction:column;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+  #chatScreen.visible{
+    opacity:1;
+    visibility:visible;
+  }
+  .chat-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 16px 28px;
+    background: var(--bg-2);
+    border-bottom: 1px solid var(--border);
+    flex-shrink:0;
+  }
+  .chat-header .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .chat-header .slash{ color: var(--red); font-weight:800; font-size:20px; }
+  .chat-header .word{ font-weight:800; font-size:20px; }
+  .chat-header .sub{
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding-left: 12px;
+    border-left: 1px solid var(--border);
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap: 18px;
+  }
+  .status{
+    font-size: 11.5px;
+    color: var(--muted);
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .status .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:#4ade80;
+    box-shadow: 0 0 0 3px rgba(74,222,128,0.18);
+  }
+  .back-btn{
+    background:none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    cursor:pointer;
+    font-family: inherit;
+  }
+  .back-btn:hover{ color: var(--white); border-color: rgba(245,240,242,0.25); }
+
+  .chat-body{
+    flex:1;
+    display:flex;
+    min-height:0;
+  }
+  .side{
+    width: 270px;
+    flex-shrink:0;
+    background: var(--panel);
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    overflow-y:auto;
+  }
+  .side .label{
+    font-size: 10.5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .side ul{
+    list-style:none;
+    margin:0; padding:0;
+  }
+  .side li{
+    font-size: 12.5px;
+    color: var(--white);
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    padding: 11px 13px;
+    border-radius: 7px;
+    margin-bottom: 8px;
+    cursor:pointer;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .side li:hover{
+    border-color: var(--red);
+    background: rgba(234,59,82,0.08);
+  }
+  #n8n-chat{
+    flex:1;
+    min-width:0;
+  }
+
+  :root{
+    --chat--color-primary: #ea3b52;
+    --chat--color-secondary: #9b5cf6;
+    --chat--color-white: #17101a;
+    --chat--color-light: #1f1520;
+    --chat--color-dark: #f5f0f2;
+    --chat--color-typing: #a89aa4;
+    --chat--spacing: 1rem;
+    --chat--border-radius: 8px;
+    --chat--font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    --chat--message--font-size: 0.95rem;
+    --chat--header--background: #150a12;
+    --chat--header--color: #f5f0f2;
+    --chat--body--background: #0a0509;
+    --chat--message--bot--background: #1f1520;
+    --chat--message--bot--color: #f5f0f2;
+    --chat--message--user--background: linear-gradient(135deg,#ea3b52,#9b5cf6);
+    --chat--message--user--color: #ffffff;
+    --chat--toggle--background: #ea3b52;
+    --chat--toggle--hover--background: #d12e44;
+    --chat--input--background: #17101a;
+    --chat--input--text-color: #f5f0f2;
+    --chat--input--border: 1px solid rgba(245,240,242,0.12);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ================= LOGIN SCREEN ================= -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-logo">
+        <span class="slash">/</span><span class="word">solife</span>
+      </div>
+      <div class="login-sub">Espace collaborateur</div>
+
+      <div class="login-error" id="loginError"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginUser">Identifiant</label>
+          <input type="text" id="loginUser" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="loginPass">Mot de passe</label>
+          <input type="password" id="loginPass" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="login-btn" id="loginBtn">Se connecter</button>
+      </form>
+
+      <div class="login-hint">Compte introuvable ou mot de passe oublié ?<br>Contactez le bureau Solife.</div>
+    </div>
+  </div>
+
+  <!-- ================= WELCOME SCREEN ================= -->
+  <div id="welcome" class="hidden">
+    <div class="welcome-inner">
+      <div class="welcome-copy">
+        <div class="eyebrow">AI Customer Assistant</div>
+        <div class="logo-row">
+          <span class="slash">/</span><span class="word">solife</span><span class="tm">™</span>
+        </div>
+        <div class="tagline">Life &amp; Health Insurance</div>
+        <h1>Votre assistant intelligent pour comprendre vos contrats Solife</h1>
+        <p>Posez vos questions sur vos produits, contrats ou processus d'assurance-vie. Notre assistant s'appuie exclusivement sur la documentation interne Solife, traitée en local pour garantir la confidentialité totale de vos échanges.</p>
+        <button class="start-btn" onclick="startChat()">Démarrer la conversation →</button>
+      </div>
+      <div class="welcome-visual">
+        <img src="{{ url_for('static', filename='solife-hero.png') }}" alt="Solife">
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CHAT SCREEN ================= -->
+  <div id="chatScreen">
+    <div class="chat-header">
+      <div class="brand">
+        <span class="slash">/</span><span class="word">solife</span>
+        <span class="sub">Assistant Client IA</span>
+      </div>
+      <div class="header-right">
+        <div class="status"><span class="dot"></span> En ligne</div>
+        <button class="back-btn" onclick="goBack()">← Retour à l'accueil</button>
+      </div>
+    </div>
+    <div class="chat-body">
+      <aside class="side">
+        <div class="label">Exemples de questions</div>
+        <ul>
+          <li onclick="askQuestion(this)">Comment fonctionne le rebalancing ?</li>
+          <li onclick="askQuestion(this)">Qu'est-ce que le Surrender ?</li>
+          <li onclick="askQuestion(this)">Qui est le bénéficiaire de mon contrat ?</li>
+          <li onclick="askQuestion(this)">Comment effectuer un Surrender ?</li>
+          <li onclick="askQuestion(this)">Quels sont les fonds disponibles ?</li>
+        </ul>
+      </aside>
+      <div id="n8n-chat"></div>
+    </div>
+  </div>
+
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+<script type="module">
+  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+  const chatInstance = createChat({
+    webhookUrl: '{{ chat_webhook_url }}',
+    target: '#n8n-chat',
+    mode: 'fullscreen',
+    showWelcomeScreen: false,
+    initialMessages: [
+      'Bonjour 👋 Je suis l\'assistant client Solife. Posez-moi une question sur vos contrats, produits ou processus.'
+    ],
+    i18n: {
+      en: {
+        title: '',
+        subtitle: '',
+        footer: '',
+        getStarted: 'Nouvelle conversation',
+        inputPlaceholder: 'Écrivez votre question...',
+      },
+    },
+  });
+
+  // ---- Authentification ----
+  const LOGIN_WEBHOOK_URL = '{{ login_webhook_url }}';
+
+  let currentUser = null; // { username, role } - conservé en mémoire pour la session en cours
+
+  const loginForm = document.getElementById('loginForm');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginError = document.getElementById('loginError');
+
+  function showLoginError(message){
+    loginError.textContent = message;
+    loginError.classList.add('visible');
+  }
+  function hideLoginError(){
+    loginError.classList.remove('visible');
+  }
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    hideLoginError();
+
+    const username = document.getElementById('loginUser').value.trim();
+    const password = document.getElementById('loginPass').value;
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Connexion...';
+
+    try{
+      const response = await fetch(LOGIN_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      const data = await response.json();
+
+      // Adapte ces conditions au format exact renvoyé par le node "Respond" du workflow Auth
+      if (response.ok && data.success) {
+        currentUser = { username, role: data.role || null };
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('welcome').classList.remove('hidden');
+      } else {
+        showLoginError(data.message || "Identifiant ou mot de passe incorrect. Merci de contacter le bureau.");
+      }
+    } catch(err){
+      showLoginError("Impossible de contacter le service d'authentification. Réessayez dans un instant.");
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Se connecter';
+    }
+  });
+
+  window.startChat = function(){
+    document.getElementById('welcome').classList.add('hidden');
+    document.getElementById('chatScreen').classList.add('visible');
+  };
+
+  window.goBack = function(){
+    document.getElementById('chatScreen').classList.remove('visible');
+    document.getElementById('welcome').classList.remove('hidden');
+  };
+
+  window.askQuestion = function(el){
+    const text = el.textContent;
+    const input = document.querySelector('#n8n-chat textarea, #n8n-chat input[type="text"]');
+    if(input){
+      input.value = text;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.focus();
+    }
+  };
+</script>
+</body>
+</html>
