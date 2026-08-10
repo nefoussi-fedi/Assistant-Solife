@@ -1,20 +1,12 @@
-version: "3.8"
-
 services:
   solife-flask:
     build: .
     container_name: solife-flask-container
     ports:
-      - "5000:5000"
+      - "${FLASK_PORT:-5000}:5000"
     environment:
-      # Important : ces URLs sont utilisées par le NAVIGATEUR (JavaScript
-      # exécuté sur votre PC), pas par le conteneur Flask lui-même.
-      # Le navigateur ne connaît pas les noms de conteneurs Docker
-      # ("n8n-container") — il faut donc garder "localhost", en supposant
-      # que le port 5678 de n8n est bien publié sur votre machine
-      # (ce qui est déjà le cas d'après vos tests précédents).
-      - CHAT_WEBHOOK_URL=http://localhost:5678/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat
-      - LOGIN_WEBHOOK_URL=http://localhost:5678/webhook/solife-login
+      - CHAT_WEBHOOK_URL=${CHAT_WEBHOOK_URL}
+      - LOGIN_WEBHOOK_URL=${LOGIN_WEBHOOK_URL}
     networks:
       - solife-network
     restart: unless-stopped
@@ -23,7 +15,7 @@ services:
     image: n8nio/n8n
     container_name: n8n-container
     ports:
-      - "5678:5678"
+      - "${N8N_PORT:-5678}:5678"
     volumes:
       - n8n_data:/home/node/.n8n
     networks:
@@ -34,7 +26,7 @@ services:
     image: mongo
     container_name: mongodb-container
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT:-27017}:27017"
     volumes:
       - mongo_data:/data/db
     networks:
@@ -45,7 +37,7 @@ services:
     image: qdrant/qdrant
     container_name: qdrant-container
     ports:
-      - "6333:6333"
+      - "${QDRANT_PORT:-6333}:6333"
     volumes:
       - qdrant_storage:/qdrant/storage
     networks:
