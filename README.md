@@ -12,6 +12,7 @@ solife-flask/
 ├── requirements.txt       → Dépendances (Flask, Gunicorn)
 ├── Dockerfile             → Image Docker multi-stage (Python 3.12-slim + Gunicorn)
 ├── docker-compose.yml     → Composition Docker avec réseau externe solife-network
+├── n8n-workflows/         → Workflows n8n exportés (principal, embedding, Auth)
 ├── .github/workflows/     → CI/CD GitHub Actions pour build/push sur Docker Hub
 ├── templates/
 │   └── index.html         → Page unique (Écran Login, Accueil & Widget Chat n8n)
