@@ -15,7 +15,18 @@ jobs:
       - name: Checkout du code
         uses: actions/checkout@v4
 
-      # 2. Prépare l'outil de construction d'image Docker
+      # 2. Configuration de Python et exécution des tests unitaires
+      - name: Configuration Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Exécution des tests unitaires
+        run: |
+          pip install -r requirements.txt
+          python -m unittest discover tests
+
+      # 3. Prépare l'outil de construction d'image Docker
       - name: Configurer Docker Buildx
         uses: docker/setup-buildx-action@v3
 
