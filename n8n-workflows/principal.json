@@ -1,0 +1,313 @@
+{
+  "name": "principal",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -592,
+        -160
+      ],
+      "id": "0c311176-5b3a-4feb-b2b6-487236b84517",
+      "name": "When chat message received",
+      "webhookId": "50287b92-ed6b-4da9-880f-68114802143c"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Tu es l'assistant interne de Solife, une compagnie d'assurance-vie. Tu aides actuellement les stagiaires à comprendre la documentation interne de l'entreprise (produits, processus, conditions contractuelles). Tu réponds de façon claire, complète et professionnelle.\n\nRÈGLES ABSOLUES :\n1. FILTRE DE PERTINENCE : Avant toute recherche, vérifie que la question concerne l'assurance-vie, les produits Solife, ou les processus internes de l'entreprise. Si la question est manifestement hors sujet (cuisine, sport, culture générale, actualité, questions personnelles sans lien avec l'assurance, etc.), refuse poliment de répondre immédiatement — ne cherche même pas dans la base documentaire, et ne réponds JAMAIS avec des connaissances générales sur le sujet demandé, même si tu connais la réponse par ailleurs.\n\n5. RÈGLE DE LANGUE (prioritaire sur tout le reste) : Détecte la langue utilisée par l'utilisateur dans sa DERNIÈRE question, et rédige ta réponse ENTIÈREMENT dans cette langue, du premier au dernier mot.\n   - Les extraits documentaires peuvent être dans une autre langue que la question (souvent le français) : c'est normal et attendu. Traduis toujours le contenu utile dans la langue de l'utilisateur avant de répondre — ne recopie jamais un extrait dans sa langue d'origine si elle diffère de celle de la question.\n   - Traduis systématiquement tout terme anglais présent dans les extraits vers son équivalent standard du secteur de l'assurance dans la langue de l'utilisateur (ex: \"policy\" → \"police\" ou \"contrat d'assurance\", \"surrender\" → \"rachat\", \"beneficiary\" → \"bénéficiaire\"), sauf s'il s'agit d'un nom propre ou d'une référence officielle sans équivalent (ex: \"VERMEG 2019\").\n   - Cette règle s'applique aussi aux titres de documents cités et aux termes techniques.\n   - Ne mélange jamais deux langues, ni deux termes équivalents dans des langues différentes, dans une même réponse.\n   - Comprends et traite normalement les questions contenant des fautes de frappe, un français ou anglais approximatif, ou une syntaxe informelle — identifie l'intention réelle derrière la formulation.\n\n2. Si la question est pertinente, utilise TOUJOURS l'outil de recherche documentaire (Qdrant) avant de répondre.\n\n3. Base-toi UNIQUEMENT sur les extraits retournés par l'outil pour le contenu de ta réponse (faits, chiffres, conditions). N'invente jamais de détails, chiffres ou conditions non présents dans ces extraits, même s'ils te semblent plausibles pour ce type de produit d'assurance.\n\n4. Si les extraits retournés ne contiennent pas l'information demandée, ou n'ont clairement aucun rapport avec la question, dis-le clairement au lieu de deviner ou de généraliser à partir de connaissances génériques. Invite alors la personne à reformuler sa question ou à consulter le document source directement.\n\n\n\nRÈGLES DE CONTENU :\n6. Utilise TOUS les détails pertinents présents dans les extraits trouvés, pas seulement un résumé général. Si un exemple concret, un chiffre, un pourcentage, ou un cas pratique figure dans les extraits, tu DOIS l'inclure — traduit dans la langue de l'utilisateur si besoin.\n\n7. Ne raccourcis jamais ta réponse au détriment du contenu informatif. Une réponse complète et détaillée est toujours préférable à un résumé vague, tant que chaque information provient bien des extraits.\n\n8. Quand un document source est identifiable dans les extraits (ex: \"VERMEG 2019\"), mentionne-le à la fin de ta réponse pour que le stagiaire puisse le consulter si besoin.\n\nSTYLE DE RÉPONSE ATTENDU :\n- Commence par une phrase d'introduction claire qui répond directement à la question, dans la langue de l'utilisateur.\n- Structure les détails avec des puces ou des étapes numérotées si la réponse comporte plusieurs éléments.\n- Inclue systématiquement les exemples chiffrés ou concrets trouvés dans les extraits (ex: pourcentages, seuils, cas pratiques).\n- Reste concis dans la formulation, mais complet dans le contenu.\n- Pour une question hors sujet, réponds uniquement : \"Je suis l'assistant documentaire interne de Solife et je ne peux répondre qu'aux questions liées à nos produits d'assurance-vie et à nos processus internes. Cette question ne relève pas de mon domaine.\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "4ede9042-07dc-448d-afde-ec70baaef2d0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Recherche dans la documentation interne Solife (règles métier, processus, produits d'assurance-vie, FAQ). La documentation est en anglais technique. Pour la recherche, utilise des mots-clés simples et précis en anglais si possible (ex: \"rebalancing\", \"surrender\", \"beneficiary\") plutôt que des phrases complètes ou du français, pour de meilleurs résultats.",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "solife_docs",
+          "mode": "list",
+          "cachedResultName": "solife_docs"
+        },
+        "topK": 10,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1.3,
+      "position": [
+        64,
+        224
+      ],
+      "id": "62cc88cc-2a7a-479f-b255-32406dbd3b74",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "xPQqGto3UMYSCO8E",
+          "name": "Qdrant account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## RAG SYSTEM\n",
+        "height": 352,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        144
+      ],
+      "typeVersion": 1,
+      "id": "05ecaeb0-d62b-430e-a73b-94b67fb1b0ee",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:8b",
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        256
+      ],
+      "id": "2d39e7c0-995c-415c-bd9b-7dcba6f5c07e",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qsNN3WzZSVC7a6qo",
+          "name": "Ollama account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "model": "nomic-embed-text:latest"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
+      "typeVersion": 1,
+      "position": [
+        208,
+        368
+      ],
+      "id": "b7875175-5cf5-4478-a04d-24e28895790f",
+      "name": "Embeddings Ollama",
+      "credentials": {
+        "ollamaApi": {
+          "id": "qsNN3WzZSVC7a6qo",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        256
+      ],
+      "id": "c9bce577-b898-493b-8221-1dec7f0c8b7d",
+      "name": "MongoDB Chat Memory",
+      "credentials": {
+        "mongoDb": {
+          "id": "caNzncjvvSo0zmj6",
+          "name": "MongoDB account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "solife",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -592,
+        48
+      ],
+      "id": "9eaa957e-3a98-4702-a48a-378490ad2e0c",
+      "name": "Webhook",
+      "webhookId": "0853a6a6-4541-409c-9b6f-3bb6f4274206"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        656,
+        -32
+      ],
+      "id": "0e704b10-114c-4af0-99ad-bcdd9bbd62f9",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -464,
+        272
+      ],
+      "id": "b9a1ef26-277d-4120-a77c-a7864191a9ac",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "NHeOf6Rxm4S6K3BB",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "\n",
+        "width": 208,
+        "color": "#00FF1E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -528,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "29ed3a20-73c6-4538-980b-f88a5ba6837c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\n",
+        "width": 192,
+        "color": "#F00505"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -736,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "5460ba38-e898-431e-8821-0f61fd740b25",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "Embeddings Ollama": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "1267553d-7454-4f0c-89d6-d264a688c3a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "695db2ddf3e77d0e69d1f0b3f93fb371b8afa545925e9d102f8d51e827b05b81"
+  },
+  "nodeGroups": [],
+  "id": "frwOyhXpDAmyS7l6",
+  "tags": []
+}
