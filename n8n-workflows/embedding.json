@@ -18,7 +18,7 @@
     },
     {
       "parameters": {
-        "fileSelector": "/home/node/.n8n-files/*.pdf",
+        "fileSelector": "={{ $json.body && $json.body.filepath ? $json.body.filepath : ($json.body && $json.body.filename ? '/home/node/.n8n-files/' + $json.body.filename : '/home/node/.n8n-files/*.pdf') }}",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
