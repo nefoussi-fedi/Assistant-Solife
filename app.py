@@ -1,5 +1,6 @@
 import os
-from flask import Flask, render_template
+import re
+from flask import Flask, render_template, jsonify
 
 app = Flask(__name__)
 
@@ -23,6 +24,20 @@ def index():
         chat_webhook_url=CHAT_WEBHOOK_URL,
         login_webhook_url=LOGIN_WEBHOOK_URL,
     )
+
+
+@app.route("/presentation")
+def presentation():
+    return render_template("presentation.html")
+
+
+@app.route("/api/slides")
+def api_slides():
+    slides_dir = os.path.join(app.static_folder, "slides")
+    files = [f for f in os.listdir(slides_dir) if f.endswith(".png")]
+    # Tri numérique : slide_1, slide_2, ..., slide_10, slide_29
+    files.sort(key=lambda x: int(re.search(r"(\d+)", x).group(1)))
+    return jsonify(files)
 
 
 @app.route("/health")

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Customer Assistant for Solife — Présentation</title>
+    <meta name="description" content="Présentation interactive de l'AI Customer Assistant pour Solife par Nefoussi Fedi — Vermeg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+            cursor: none;
+        }
+
+        body.show-cursor {
+            cursor: default;
+        }
+
+        /* ── Slide Container ── */
+        #slide-container {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        #slide-img {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #slide-img.loaded {
+            opacity: 1;
+        }
+
+        /* ── Progress Bar ── */
+        #progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #7c3aed, #a855f7, #c084fc);
+            transition: width 0.4s ease;
+            z-index: 100;
+            border-radius: 0 2px 2px 0;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.6);
+        }
+
+        /* ── Controls Overlay ── */
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(15, 15, 25, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 10px 24px;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            transform: translateX(-50%) translateY(10px);
+        }
+
+        #controls.visible {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            color: #c4b5fd;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ctrl-btn:hover {
+            background: rgba(124, 58, 237, 0.25);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .ctrl-btn:active {
+            transform: scale(0.95);
+        }
+
+        .ctrl-btn svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        #slide-counter {
+            font-size: 14px;
+            font-weight: 600;
+            color: #a78bfa;
+            min-width: 70px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(124, 58, 237, 0.3);
+        }
+
+        /* ── Loading Spinner ── */
+        #loader {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            z-index: 500;
+            transition: opacity 0.5s ease;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(124, 58, 237, 0.2);
+            border-top-color: #a855f7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loader-text {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #a78bfa;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Slide Number Indicator (top right) ── */
+        #slide-badge {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            background: rgba(15, 15, 25, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(124, 58, 237, 0.25);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #c4b5fd;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        #slide-badge.visible {
+            opacity: 1;
+        }
+
+        /* ── Keyboard Hints (first visit) ── */
+        #hints {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 600;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        #hints.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .hints-card {
+            background: rgba(20, 15, 35, 0.95);
+            border: 1px solid rgba(124, 58, 237, 0.4);
+            border-radius: 20px;
+            padding: 40px 48px;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        .hints-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hint-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: 15px;
+            color: #d1d5db;
+        }
+
+        .hint-row kbd {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid rgba(124, 58, 237, 0.4);
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            color: #c4b5fd;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .hints-start {
+            margin-top: 28px;
+            background: linear-gradient(135deg, #7c3aed, #6366f1);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 32px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hints-start:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.4);
+        }
+
+        /* ── Navigation Arrows (side) ── */
+        .nav-zone {
+            position: fixed;
+            top: 0;
+            width: 80px;
+            height: 100%;
+            z-index: 150;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-zone:hover {
+            opacity: 1;
+        }
+
+        .nav-zone.left { left: 0; }
+        .nav-zone.right { right: 0; }
+
+        .nav-arrow {
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 15, 25, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-arrow svg {
+            width: 20px;
+            height: 20px;
+            fill: #c4b5fd;
+        }
+
+        .nav-zone:hover .nav-arrow {
+            background: rgba(124, 58, 237, 0.3);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="show-cursor">
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loader-text">Chargement de la présentation…</div>
+    </div>
+
+    <!-- Keyboard Hints -->
+    <div id="hints">
+        <div class="hints-card">
+            <h2>🎤 Navigation de la présentation</h2>
+            <div class="hint-row"><kbd>→</kbd> Slide suivante</div>
+            <div class="hint-row"><kbd>←</kbd> Slide précédente</div>
+            <div class="hint-row"><kbd>F</kbd> Plein écran</div>
+            <div class="hint-row"><kbd>Home</kbd> Première slide</div>
+            <div class="hint-row"><kbd>End</kbd> Dernière slide</div>
+            <div class="hint-row"><kbd>Esc</kbd> Quitter plein écran</div>
+            <button class="hints-start" id="btn-start" onclick="closeHints()">Commencer la présentation</button>
+        </div>
+    </div>
+
+    <!-- Slide -->
+    <div id="slide-container">
+        <img id="slide-img" alt="Slide de présentation">
+    </div>
+
+    <!-- Side Navigation -->
+    <div class="nav-zone left" id="nav-left" onclick="prevSlide()">
+        <div class="nav-arrow">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </div>
+    </div>
+    <div class="nav-zone right" id="nav-right" onclick="nextSlide()">
+        <div class="nav-arrow">
+            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </div>
+    </div>
+
+    <!-- Slide Badge -->
+    <div id="slide-badge"></div>
+
+    <!-- Progress Bar -->
+    <div id="progress-bar"></div>
+
+    <!-- Bottom Controls -->
+    <div id="controls">
+        <button class="ctrl-btn" id="btn-prev" onclick="prevSlide()" title="Précédent">
+            <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+        </button>
+
+        <div id="slide-counter">1 / 1</div>
+
+        <button class="ctrl-btn" id="btn-next" onclick="nextSlide()" title="Suivant">
+            <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+        </button>
+
+        <div class="divider"></div>
+
+        <button class="ctrl-btn" id="btn-fullscreen" onclick="toggleFullscreen()" title="Plein écran (F)">
+            <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        </button>
+    </div>
+
+    <script>
+        let slides = [];
+        let current = 0;
+        let controlsTimeout;
+        let badgeTimeout;
+
+        const slideImg = document.getElementById('slide-img');
+        const progressBar = document.getElementById('progress-bar');
+        const counter = document.getElementById('slide-counter');
+        const controls = document.getElementById('controls');
+        const loader = document.getElementById('loader');
+        const hints = document.getElementById('hints');
+        const badge = document.getElementById('slide-badge');
+
+        // ── Load slide list ──
+        async function init() {
+            try {
+                const res = await fetch('/api/slides');
+                slides = await res.json();
+                if (slides.length === 0) throw new Error('No slides');
+
+                // Preload first slide
+                await preloadImage(slides[0]);
+                loader.classList.add('hidden');
+                hints.classList.add('visible');
+            } catch (err) {
+                document.querySelector('.loader-text').textContent =
+                    'Erreur : impossible de charger les slides.';
+                console.error(err);
+            }
+        }
+
+        function closeHints() {
+            hints.classList.remove('visible');
+            showSlide(0);
+            showControls();
+        }
+
+        // ── Preload ──
+        function preloadImage(filename) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = resolve;
+                img.onerror = resolve;
+                img.src = `/static/slides/${filename}`;
+            });
+        }
+
+        // ── Display slide ──
+        function showSlide(index) {
+            if (index < 0 || index >= slides.length) return;
+            current = index;
+
+            slideImg.classList.remove('loaded');
+            const src = `/static/slides/${slides[current]}`;
+
+            const preload = new Image();
+            preload.onload = () => {
+                slideImg.src = src;
+                slideImg.classList.add('loaded');
+            };
+            preload.src = src;
+
+            // Update UI
+            counter.textContent = `${current + 1} / ${slides.length}`;
+            progressBar.style.width = `${((current + 1) / slides.length) * 100}%`;
+
+            // Badge
+            badge.textContent = `Slide ${current + 1} / ${slides.length}`;
+            badge.classList.add('visible');
+            clearTimeout(badgeTimeout);
+            badgeTimeout = setTimeout(() => badge.classList.remove('visible'), 2000);
+
+            // Preload next
+            if (current + 1 < slides.length) {
+                preloadImage(slides[current + 1]);
+            }
+        }
+
+        function nextSlide() {
+            if (current < slides.length - 1) showSlide(current + 1);
+        }
+
+        function prevSlide() {
+            if (current > 0) showSlide(current - 1);
+        }
+
+        // ── Controls visibility ──
+        function showControls() {
+            controls.classList.add('visible');
+            document.body.classList.add('show-cursor');
+            clearTimeout(controlsTimeout);
+            controlsTimeout = setTimeout(() => {
+                controls.classList.remove('visible');
+                document.body.classList.remove('show-cursor');
+            }, 3000);
+        }
+
+        // ── Fullscreen ──
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // ── Keyboard ──
+        document.addEventListener('keydown', (e) => {
+            showControls();
+
+            switch (e.key) {
+                case 'ArrowRight':
+                case 'ArrowDown':
+                case ' ':
+                case 'PageDown':
+                    e.preventDefault();
+                    nextSlide();
+                    break;
+                case 'ArrowLeft':
+                case 'ArrowUp':
+                case 'PageUp':
+                    e.preventDefault();
+                    prevSlide();
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    showSlide(0);
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    showSlide(slides.length - 1);
+                    break;
+                case 'f':
+                case 'F':
+                    e.preventDefault();
+                    toggleFullscreen();
+                    break;
+                case 'Escape':
+                    if (hints.classList.contains('visible')) {
+                        closeHints();
+                    }
+                    break;
+                case 'Enter':
+                    if (hints.classList.contains('visible')) {
+                        closeHints();
+                    }
+                    break;
+            }
+        });
+
+        // Mouse movement → show controls
+        document.addEventListener('mousemove', showControls);
+
+        // Click on slide → next
+        document.getElementById('slide-container').addEventListener('click', (e) => {
+            // Don't trigger if clicking nav zones
+            if (e.target.closest('.nav-zone') || e.target.closest('#controls')) return;
+            const x = e.clientX / window.innerWidth;
+            if (x < 0.3) prevSlide();
+            else nextSlide();
+        });
+
+        // Touch swipe
+        let touchStartX = 0;
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        document.addEventListener('touchend', (e) => {
+            const diff = e.changedTouches[0].screenX - touchStartX;
+            if (Math.abs(diff) > 50) {
+                if (diff < 0) nextSlide();
+                else prevSlide();
+            }
+            showControls();
+        });
+
+        // ── Init ──
+        init();
+    </script>
+</body>
+</html>
