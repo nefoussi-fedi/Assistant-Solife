@@ -3,6 +3,21 @@
   "nodes": [
     {
       "parameters": {
+        "httpMethod": "POST",
+        "path": "solife-embedding",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -350,
+        0
+      ],
+      "id": "webhook-trigger-solife-embedding",
+      "name": "Webhook Auto Ingestion"
+    },
+    {
+      "parameters": {
         "fileSelector": "/home/node/.n8n-files/*.pdf",
         "options": {}
       },
@@ -114,8 +129,18 @@
       "name": "Recursive Character Text Splitter"
     }
   ],
-  "pinData": {},
   "connections": {
+    "Webhook Auto Ingestion": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Read/Write Files from Disk": {
       "main": [
         [
@@ -147,6 +172,11 @@
             "index": 0
           }
         ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "main": [
+        []
       ]
     },
     "Embeddings Ollama": {
@@ -181,25 +211,11 @@
           }
         ]
       ]
-    },
-    "Qdrant Vector Store": {
-      "main": [
-        []
-      ]
     }
   },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
-  },
-  "versionId": "69b558ef-17f3-44b4-904c-0c6c0b72cdb0",
+  "pinData": {},
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "695db2ddf3e77d0e69d1f0b3f93fb371b8afa545925e9d102f8d51e827b05b81"
-  },
-  "nodeGroups": [],
-  "id": "OXYxVxXzpZVQaokZ",
-  "tags": []
+  }
 }
