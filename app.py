@@ -65,11 +65,25 @@ def upload_pdf():
         filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(filepath)
         
+        # Tentative de déclenchement automatique du workflow n8n d'embedding
+        try:
+            import json
+            from urllib.request import Request, urlopen
+            req = Request(
+                EMBEDDING_WEBHOOK_URL,
+                data=json.dumps({"filename": filename, "filepath": filepath}).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+            )
+            urlopen(req, timeout=3)
+        except Exception:
+            # Si le webhook n8n n'est pas encore configuré en écoute HTTP, le fichier reste prêt dans /uploads/
+            pass
+        
         return jsonify({
             "success": True,
             "filename": filename,
             "filepath": filepath,
-            "message": f"Document '{filename}' téléchargé avec succès. Il a été transmis pour l'indexation dans Qdrant.",
+            "message": f"Document '{filename}' téléchargé et transmis au workflow d'embedding n8n pour Qdrant.",
         })
     else:
         return jsonify({"success": False, "message": "Seuls les fichiers .pdf sont autorisés."}), 400
