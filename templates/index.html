@@ -349,6 +349,23 @@
     padding: 24px 20px;
     overflow-y:auto;
   }
+  .pdf-upload-btn {
+    width: 100%;
+    background: linear-gradient(135deg, rgba(155,92,246,0.2), rgba(234,59,82,0.2));
+    border: 1px dashed var(--violet);
+    color: var(--white);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+  .pdf-upload-btn:hover {
+    background: linear-gradient(135deg, rgba(155,92,246,0.35), rgba(234,59,82,0.35));
+    border-color: var(--red);
+  }
   .side .label{
     font-size: 10.5px;
     letter-spacing: 2px;
@@ -476,6 +493,15 @@
           <li onclick="askQuestion(this)">Comment effectuer un Surrender ?</li>
           <li onclick="askQuestion(this)">Quels sont les fonds disponibles ?</li>
         </ul>
+
+        <div class="label" style="margin-top: 28px;">📄 Ajouter un document PDF</div>
+        <div class="pdf-upload-box" style="margin-top: 10px;">
+          <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="handlePdfUpload(this)">
+          <button class="pdf-upload-btn" onclick="document.getElementById('pdfFileInput').click()">
+            📎 Indexer un PDF dans Qdrant
+          </button>
+          <div id="pdfUploadStatus" class="pdf-status" style="margin-top: 10px; font-size: 11.5px; line-height: 1.4; display: none;"></div>
+        </div>
       </aside>
       <div id="n8n-chat"></div>
     </div>
@@ -575,6 +601,43 @@
       input.value = text;
       input.dispatchEvent(new Event('input', { bubbles: true }));
       input.focus();
+    }
+  };
+
+  window.handlePdfUpload = async function(input) {
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const statusDiv = document.getElementById('pdfUploadStatus');
+    statusDiv.style.display = 'block';
+    statusDiv.style.color = '#a89aa4';
+    statusDiv.textContent = `⏳ Indexation de "${file.name}"...`;
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const res = await fetch('/api/upload-pdf', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        statusDiv.style.color = '#4ade80';
+        statusDiv.textContent = `✅ ${file.name} téléversé et transmis à Qdrant !`;
+        
+        // Insérer une suggestion de question dans le champ de chat
+        const chatInput = document.querySelector('#n8n-chat textarea, #n8n-chat input[type="text"]');
+        if(chatInput){
+          chatInput.value = `Quelles sont les informations importantes du document ${file.name} ?`;
+          chatInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } else {
+        statusDiv.style.color = '#ea3b52';
+        statusDiv.textContent = `❌ ${data.message || 'Échec de l\'upload'}`;
+      }
+    } catch(err) {
+      statusDiv.style.color = '#ea3b52';
+      statusDiv.textContent = '❌ Erreur lors de l\'envoi du fichier au serveur.';
     }
   };
 </script>

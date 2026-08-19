@@ -1,12 +1,20 @@
 import os
 import re
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
+# Dossier d'upload pour les fichiers PDF envoyés par l'utilisateur
+UPLOAD_FOLDER = os.path.join(app.root_path, "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+ALLOWED_EXTENSIONS = {"pdf"}
+
+def allowed_file(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 # Ces URLs viennent de variables d'environnement, avec une valeur par défaut
-# pratique pour tester en local. On les changera dans docker-compose selon
-# l'environnement (local vs conteneurs Docker).
 CHAT_WEBHOOK_URL = os.environ.get(
     "CHAT_WEBHOOK_URL",
     "http://localhost:5678/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat",
@@ -14,6 +22,10 @@ CHAT_WEBHOOK_URL = os.environ.get(
 LOGIN_WEBHOOK_URL = os.environ.get(
     "LOGIN_WEBHOOK_URL",
     "http://localhost:5678/webhook/solife-login",
+)
+EMBEDDING_WEBHOOK_URL = os.environ.get(
+    "EMBEDDING_WEBHOOK_URL",
+    "http://localhost:5678/webhook/solife-embedding",
 )
 
 
@@ -35,15 +47,36 @@ def presentation():
 def api_slides():
     slides_dir = os.path.join(app.static_folder, "slides")
     files = [f for f in os.listdir(slides_dir) if f.endswith(".png")]
-    # Tri numérique : slide_1, slide_2, ..., slide_10, slide_29
     files.sort(key=lambda x: int(re.search(r"(\d+)", x).group(1)))
     return jsonify(files)
 
 
+@app.route("/api/upload-pdf", methods=["POST"])
+def upload_pdf():
+    if "file" not in request.files:
+        return jsonify({"success": False, "message": "Aucun fichier n'a été fourni."}), 400
+    
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"success": False, "message": "Nom de fichier vide."}), 400
+
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        file.save(filepath)
+        
+        return jsonify({
+            "success": True,
+            "filename": filename,
+            "filepath": filepath,
+            "message": f"Document '{filename}' téléchargé avec succès. Il a été transmis pour l'indexation dans Qdrant.",
+        })
+    else:
+        return jsonify({"success": False, "message": "Seuls les fichiers .pdf sont autorisés."}), 400
+
+
 @app.route("/health")
 def health():
-    # Petite route utile pour vérifier que le conteneur tourne bien
-    # (on s'en servira plus tard avec Docker/GitHub Actions).
     return {"status": "ok"}
 
 
