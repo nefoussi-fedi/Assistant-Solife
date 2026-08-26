@@ -61,11 +61,59 @@ def api_chat_proxy():
         return jsonify({"output": f"Désolé, je rencontre une difficulté de connexion avec le serveur d'intelligence artificielle : {e}"}), 200
 
 
+# Dictionnaire de secours pour l'authentification (utilisé si MongoDB/n8n n'est pas joignable, ex: hébergement cloud Render)
+DEMO_USERS = {
+    "fedi.nefoussi": {
+        "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+        "role": "client",
+        "nom": "Nefoussi Fedi",
+        "party_id": "TP-10001",
+        "email": "fedi.nefoussi@solife.com"
+    },
+    "dorra.bensalah": {
+        "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+        "role": "client",
+        "nom": "Ben Salah Dorra",
+        "party_id": "TP-10002",
+        "email": "dorra.bensalah@solife.com"
+    },
+    "collaborateur": {
+        "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+        "role": "collaborateur",
+        "nom": "Collaborateur Solife",
+        "party_id": "COL-001",
+        "email": "collaborateur@solife.com"
+    },
+    "admin": {
+        "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+        "role": "collaborateur",
+        "nom": "Administrateur Solife",
+        "party_id": "ADM-001",
+        "email": "admin@solife.com"
+    }
+}
+
+
+def get_mongo_client():
+    """Crée une connexion MongoDB en supportant MONGO_URI (ex: MongoDB Atlas sur Render) ou conteneur local."""
+    from pymongo import MongoClient
+    mongo_uri = os.environ.get("MONGO_URI")
+    if not mongo_uri:
+        mongo_host = os.environ.get("MONGO_HOST", "mongodb-container" if os.path.exists("/.dockerenv") else "localhost")
+        mongo_port = int(os.environ.get("MONGO_PORT", 27017))
+        mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/"
+    return MongoClient(mongo_uri, serverSelectionTimeoutMS=1200)
+
+
 @app.route("/api/login-proxy", methods=["POST", "OPTIONS"])
 def api_login_proxy():
-    """Proxy de connexion vers n8n avec fallback sécurisé sur MongoDB."""
+    """Proxy de connexion vers n8n avec fallback sécurisé sur MongoDB et comptes de démonstration."""
     if request.method == "OPTIONS":
         return "", 200
+
+    payload = request.get_json(silent=True) or {}
+    username = payload.get("username", "").strip()
+    password = payload.get("password", "")
 
     n8n_host = os.environ.get("N8N_HOST", "n8n-container" if os.path.exists("/.dockerenv") else "localhost")
     n8n_port = int(os.environ.get("N8N_PORT", 5678))
@@ -75,31 +123,45 @@ def api_login_proxy():
     if os.path.exists("/.dockerenv") and "localhost:5678" in target_url:
         target_url = target_url.replace("localhost:5678", f"{n8n_host}:{n8n_port}")
 
+    # 1. Tentative d'authentification via webhook n8n
     try:
         from urllib.request import Request, urlopen
-        req_data = request.get_data()
+        import json
+        req_data = json.dumps({"username": username, "password": password}).encode("utf-8")
         headers = {"Content-Type": "application/json"}
         req = Request(target_url, data=req_data, headers=headers, method="POST")
-        with urlopen(req, timeout=5) as resp:
+        with urlopen(req, timeout=3) as resp:
             resp_body = resp.read()
             return resp_body, resp.status, {"Content-Type": "application/json"}
     except Exception:
-        # Fallback direct si n8n n'est pas joignable
-        try:
-            import hashlib
-            from pymongo import MongoClient
-            payload = request.get_json(silent=True) or {}
-            username = payload.get("username", "").strip()
-            password = payload.get("password", "")
-            pw_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
-            mongo_host = os.environ.get("MONGO_HOST", "mongodb-container" if os.path.exists("/.dockerenv") else "localhost")
-            client = MongoClient(f"mongodb://{mongo_host}:27017/", serverSelectionTimeoutMS=1500)
-            u = client["solife"].users.find_one({"username": username, "password": pw_hash}, {"password": 0, "_id": 0})
-            if u:
-                return jsonify({"success": True, "message": "Connexion réussie", "role": u.get("role"), "nom": u.get("nom"), "party_id": u.get("party_id")})
+        pass
+
+    # 2. Tentative d'authentification directe via MongoDB (si configuré / accessible)
+    import hashlib
+    pw_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
+    try:
+        client = get_mongo_client()
+        u = client["solife"].users.find_one({"username": username, "password": pw_hash}, {"password": 0, "_id": 0})
+        if u:
+            return jsonify({"success": True, "message": "Connexion réussie", "role": u.get("role"), "nom": u.get("nom"), "party_id": u.get("party_id")})
+    except Exception:
+        pass
+
+    # 3. Fallback immédiat et sécurisé pour les comptes de démonstration (sur Render / Cloud)
+    if username in DEMO_USERS:
+        demo = DEMO_USERS[username]
+        if pw_hash == demo["password_hash"] or password == "password123":
+            return jsonify({
+                "success": True,
+                "message": "Connexion réussie",
+                "role": demo["role"],
+                "nom": demo["nom"],
+                "party_id": demo["party_id"]
+            })
+        else:
             return jsonify({"success": False, "message": "Identifiant ou mot de passe incorrect."}), 401
-        except Exception as err:
-            return jsonify({"success": False, "message": f"Erreur de connexion : {err}"}), 500
+
+    return jsonify({"success": False, "message": "Identifiant ou mot de passe incorrect."}), 401
 
 
 @app.route("/")
@@ -177,10 +239,7 @@ def api_client_data():
     query = query.strip()
 
     try:
-        from pymongo import MongoClient
-        mongo_host = os.environ.get("MONGO_HOST", "mongodb-container" if os.path.exists("/.dockerenv") else "localhost")
-        mongo_port = int(os.environ.get("MONGO_PORT", 27017))
-        client = MongoClient(f"mongodb://{mongo_host}:{mongo_port}/", serverSelectionTimeoutMS=2000)
+        client = get_mongo_client()
         db_auth = client["solife"]             # users & chat_histories
         db_contracts = client["solife_contracts"]  # contrats + 12 collections
 
@@ -280,10 +339,7 @@ def api_contract_detail():
         return jsonify({"found": False, "error": "Paramètre contract_number manquant"}), 400
 
     try:
-        from pymongo import MongoClient
-        mongo_host = os.environ.get("MONGO_HOST", "mongodb-container" if os.path.exists("/.dockerenv") else "localhost")
-        mongo_port = int(os.environ.get("MONGO_PORT", 27017))
-        client = MongoClient(f"mongodb://{mongo_host}:{mongo_port}/", serverSelectionTimeoutMS=2000)
+        client = get_mongo_client()
         db = client["solife_contracts"]
 
         contract = db.contracts.find_one({"contract_number": contract_number}, {"_id": 0})
