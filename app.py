@@ -30,15 +30,104 @@ EMBEDDING_WEBHOOK_URL = os.environ.get(
 )
 
 
+SOLIFE_SYSTEM_PROMPT = """Tu es l'assistant intelligent de Solife (Life & Health Insurance), expert en assurance-vie, prévoyance et gestion de patrimoine.
+Tu réponds toujours de manière professionnelle, structurée et bienveillante en français avec un formatage Markdown élégant (listes à puces, gras, tableaux si pertinent).
+
+BASE DE CONNAISSANCES SOLIFE :
+1. PRODUITS D'ASSURANCE-VIE & PRÉVOYANCE :
+   - SL-AVENIR (Solife Avenir Épargne) : Contrat multisupport d'assurance-vie, combinant fonds en euros sécurisé et unités de compte (ESG, climat, actions internationales).
+   - SL-RETRAITE (Solife Plan Retraite Sérénité) : PER assurance-vie avec déductibilité fiscale, garanties décès et rente éducation.
+   - SL-SERENITE (Solife Sérénité Patrimoine) : Contrat patrimonial haut de gamme, gestion pilotée et libre.
+   - SL-SANTE (Solife Protection Santé & Prévoyance) : Prévoyance individuelle, indemnités journalières et capital décès.
+
+2. RÈGLES DE GESTION & FONCTIONNEMENT :
+   - Rebalancing automatique : Arbitrage semestriel ou annuel 100% gratuit si une UC dévie de plus de 5% de son allocation cible.
+   - Sécurisation des plus-values : Transfert automatique vers le Fonds Euros dès que les gains dépassent un seuil (+10%).
+   - Rachat partiel / total (Surrender) : Rachat partiel dès 1 000 € (solde min 3 000 €). Aucun frais de sortie après 1 an. Règlement sous 72h ouvrées. Fiscalité : abattement annuel de 4 600 € / 9 200 € après 8 ans.
+   - Frais : 0% sur versements programmés, 0.60%/an sur Fonds Euros, 0.85%/an sur UC. 1 arbitrage gratuit/an puis 0.20%.
+   - Modification de clause bénéficiaire : Possible à tout moment par formulaire signé ou acte notarié.
+
+3. DONNÉES DES CLIENTS SOLIFE :
+   • Client M. Nefoussi Fedi (Party ID : TP-10001, Email : fedi.nefoussi@solife.com) :
+     - Contrat 1 : SOL-2022-7710 (SL-AVENIR / Solife Avenir Épargne)
+       * Date d'effet : 10/04/2022 | Statut : En vigueur
+       * Cumul versements : 72 000,00 € | Valeur de rachat actuelle : 85 400,00 € (Gain : +13 400,00 €, rendement annuel 4,25%)
+       * Prélèvement programmé : 300,00 € / mois (le 5 de chaque mois)
+       * Répartition : 55% Fonds Euros (46 970 €), 30% Solife Actions Monde ESG (25 620 €), 15% Solife Obligations Vertes (12 810 €)
+       * Garanties : Capital décès garanti de 100 000,00 €
+       * Bénéficiaires : Mme Sarah Nefoussi (Épouse, 60% ou rang 1) et Rayan Nefoussi (Enfant, 40% ou rang 2)
+       * Options : Rebalancing automatique semestriel (seuil 5%), sécurisation des plus-values (+10%), garantie plancher décès.
+     - Contrat 2 : SOL-2024-3320 (SL-RETRAITE / Plan Retraite Sérénité)
+       * Date d'effet : 15/01/2024 | Statut : En vigueur
+       * Cumul versements : 29 855,00 € | Valeur de rachat actuelle : 32 150,00 € (Gain : +2 295,00 €, rendement annuel 3,90%)
+       * Prélèvement programmé : 200,00 € / mois (le 10 de chaque mois)
+       * Répartition : 40% Fonds Euros Retraite (12 860 €), 45% Actions Climat & Transition (14 467,50 €), 15% Immobilier Responsable (4 822,50 €)
+       * Garanties : Rente éducation de 6 000,00 € / an jusqu'aux 25 ans de l'enfant
+       * Bénéficiaires : Rayan Nefoussi (Enfant, 100%)
+       * Total global client Fedi : 101 855 € versés, 117 550 € d'encours total, +15 695 € de plus-value nette (+15,41%), 500 €/mois épargnés.
+
+   • Client Mme Dorra Ben Salah (Party ID : TP-10002, Email : dorra.bensalah@solife.com) :
+     - Contrat 1 : SOL-2023-5540 (SL-SERENITE) — 62 800,00 € (Versements : 55 000 €, +7 800 €) | 250 €/mois le 8
+     - Contrat 2 : SOL-2025-1190 (SL-SANTE) — 18 500,00 € (Versements : 17 000 €, +1 500 €) | 150 €/mois le 15
+     - Total global Dorra : 81 300 € d'encours, 400 €/mois de versements programmés.
+"""
+
+
+def call_gemini_api(user_message, system_instruction, api_key):
+    """Appelle directement l'API REST Google Gemini (modèle gemini-2.5-flash ou gemini-1.5-flash) sans dépendance externe."""
+    import json
+    from urllib.request import Request, urlopen
+    
+    models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+    for model in models:
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+            payload = {
+                "system_instruction": {
+                    "parts": [{"text": system_instruction}]
+                },
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [{"text": user_message}]
+                    }
+                ],
+                "generationConfig": {
+                    "temperature": 0.3,
+                    "maxOutputTokens": 2048
+                }
+            }
+            req = Request(url, data=json.dumps(payload).encode("utf-8"), headers={"Content-Type": "application/json"}, method="POST")
+            with urlopen(req, timeout=12) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                candidates = data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        return parts[0].get("text", "")
+        except Exception:
+            continue
+    return None
+
+
 def generate_fallback_chat_response(text, payload):
-    """Moteur de réponse IA de secours intelligent pour Solife.
-    Permet de répondre avec précision aux questions métier et aux contrats clients
-    même si le serveur n8n n'est pas directement joignable depuis l'hébergement Cloud.
+    """Moteur de réponse IA intelligent pour Solife.
+    Utilise Google Gemini si GEMINI_API_KEY est fournie, ou les règles expertes structurées.
     """
-    text_lower = text.lower()
     role = payload.get("role", "client")
     nom = payload.get("nom", "Client")
     party_id = payload.get("party_id", "TP-10001")
+
+    # 1. Tentative d'appel direct au LLM Google Gemini si clé API disponible
+    gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+    if gemini_key:
+        user_ctx = f"UTILISATEUR ACTUELLEMENT CONNECTÉ :\n- Rôle : {role}\n- Nom : {nom}\n- Identifiant (Party ID) : {party_id}\n\nQUESTION DE L'UTILISATEUR :\n{text}"
+        gemini_answer = call_gemini_api(user_ctx, SOLIFE_SYSTEM_PROMPT, gemini_key)
+        if gemini_answer and len(gemini_answer.strip()) > 10:
+            return gemini_answer
+
+    # 2. Moteur de règles expertes structurées
+    text_lower = text.lower()
     is_fedi = "fedi" in nom.lower() or party_id == "TP-10001" or "fedi" in payload.get("username", "").lower()
 
     if role == "client":
