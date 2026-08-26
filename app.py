@@ -132,6 +132,54 @@ def generate_fallback_chat_response(text, payload):
 
     if role == "client":
         if is_fedi:
+            # 0. Contrat spécifique : SOL-2022-7710 (Solife Avenir Épargne)
+            if "7710" in text_lower or ("avenir" in text_lower and "3320" not in text_lower):
+                return (
+                    f"### 🛡️ Fiche Complète du Contrat : Solife Avenir Épargne (n° `SOL-2022-7710`)\n\n"
+                    f"Bonjour Monsieur {nom}, voici l'ensemble des caractéristiques et valorisations de votre contrat d'assurance-vie :\n\n"
+                    f"#### 📊 Situation Financière & Performance :\n"
+                    f"* **Valeur de rachat actuelle :** **85 400,00 €**\n"
+                    f"* **Cumul des versements effectués :** 72 000,00 €\n"
+                    f"* **Plus-value nette générée :** **+13 400,00 €** (Gain de **+18,61 %**, rendement annuel moyen de **4,25 %**)\n"
+                    f"* **Statut :** En vigueur (souscrit le 10/04/2022)\n\n"
+                    f"#### 💳 Prélèvements & Versements :\n"
+                    f"* **Prélèvement mensuel programmé :** **300,00 € / mois** (prélevé le 5 de chaque mois)\n\n"
+                    f"#### 📈 Répartition des Supports d'Investissement :\n"
+                    f"* 💶 **Fonds Euros Sécurité (55 %) :** 46 970,00 € (Capital garanti)\n"
+                    f"* 🌿 **Solife Actions Monde ESG (30 %) :** 25 620,00 €\n"
+                    f"* 🟢 **Solife Obligations Vertes (15 %) :** 12 810,00 €\n\n"
+                    f"#### 🛡️ Garanties & Bénéficiaires :\n"
+                    f"* **Garantie Décès Plancher :** Capital garanti de **100 000,00 €**\n"
+                    f"* **Bénéficiaires désignés :**\n"
+                    f"  * **Rang 1 :** Mme Sarah Nefoussi (Épouse) — 60 %\n"
+                    f"  * **Rang 2 :** Rayan Nefoussi (Enfant) — 40 %\n\n"
+                    f"#### ⚙️ Options de Gestion Actives :\n"
+                    f"* 🔄 **Rebalancing Automatique :** Actif (semestriel, seuil de déclenchement à 5 %)\n"
+                    f"* 🔒 **Sécurisation des Plus-Values :** Actif (dès +10 % de gains)"
+                )
+
+            # 0. Contrat spécifique : SOL-2024-3320 (Plan Retraite Sérénité)
+            if "3320" in text_lower or ("retrait" in text_lower and "7710" not in text_lower):
+                return (
+                    f"### 🛡️ Fiche Complète du Contrat : Solife Plan Retraite Sérénité (n° `SOL-2024-3320`)\n\n"
+                    f"Bonjour Monsieur {nom}, voici l'ensemble des caractéristiques et valorisations de votre Plan d'Épargne Retraite (PER) :\n\n"
+                    f"#### 📊 Situation Financière & Performance :\n"
+                    f"* **Valeur de rachat actuelle :** **32 150,00 €**\n"
+                    f"* **Cumul des versements effectués :** 29 855,00 €\n"
+                    f"* **Plus-value nette générée :** **+2 295,00 €** (Gain de **+7,68 %**, rendement annuel moyen de **3,90 %**)\n"
+                    f"* **Statut :** En vigueur (souscrit le 15/01/2024)\n\n"
+                    f"#### 💳 Prélèvements & Versements :\n"
+                    f"* **Prélèvement mensuel programmé :** **200,00 € / mois** (prélevé le 10 de chaque mois)\n"
+                    f"* **Avantage Fiscal :** Versements déductibles du revenu global imposable au titre de l'épargne retraite.\n\n"
+                    f"#### 📈 Répartition des Supports d'Investissement :\n"
+                    f"* 💶 **Fonds Euros Retraite (40 %) :** 12 860,00 €\n"
+                    f"* 🌍 **Solife Actions Climat & Transition (45 %) :** 14 467,50 €\n"
+                    f"* 🏢 **Solife Immobilier Responsable (15 %) :** 4 822,50 €\n\n"
+                    f"#### 🛡️ Garanties & Bénéficiaires :\n"
+                    f"* **Garantie Rente Éducation :** Versement de **6 000,00 € / an** jusqu'aux 25 ans de l'enfant\n"
+                    f"* **Bénéficiaire désigné :** Rayan Nefoussi (Enfant) — 100 %"
+                )
+
             # 1. Gains / Performance
             if any(k in text_lower for k in ["gagné", "gain", "rendement", "performance", "plus-value", "rentab"]):
                 return (
@@ -172,7 +220,7 @@ def generate_fallback_chat_response(text, payload):
                 return (
                     f"Monsieur {nom}, voici la clause bénéficiaire enregistrée sur vos contrats :\n\n"
                     f"### 1. Contrat Assurance-Vie `SOL-2022-7710`\n"
-                    f"* **Mme Yasmine Nefoussi** (Épouse) : **60 %** du capital décès\n"
+                    f"* **Mme Sarah Nefoussi** (Épouse) : **60 %** du capital décès\n"
                     f"* **Rayan Nefoussi** (Enfant) : **40 %** du capital décès\n"
                     f"* *Garantie plancher décès activée : Capital minimum garanti de 100 000,00 €.*\n\n"
                     f"### 2. Contrat PER Retraite `SOL-2024-3320`\n"
