@@ -2,7 +2,10 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a0509">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Solife — Assistant Intelligent Assurance-Vie</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
@@ -22,14 +25,17 @@
   *{ box-sizing:border-box; }
   html,body{
     margin:0; padding:0; height:100%;
+    height: 100dvh;
     background: var(--bg);
     font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
     color: var(--white);
     overflow:hidden;
+    -webkit-tap-highlight-color: transparent;
   }
   .app{
     position:relative;
     height:100vh;
+    height:100dvh;
     width:100vw;
   }
 
@@ -653,16 +659,27 @@
   <div id="chatScreen">
     <div class="chat-header">
       <div class="brand">
+        <button class="mobile-drawer-toggle" id="mobileDrawerToggle" onclick="toggleMobileDrawer()" title="Menu &amp; Contrats" type="button">
+          ☰
+        </button>
         <span class="slash">/</span><span class="word">solife</span>
         <span class="sub" id="headerSub">Assistant IA</span>
       </div>
       <div class="header-right">
-        <div class="status"><span class="dot"></span> En ligne</div>
-        <button class="back-btn" onclick="goBack()">🚪 Déconnexion</button>
+        <div class="status"><span class="dot"></span> <span class="status-text">En ligne</span></div>
+        <button class="back-btn" onclick="goBack()" title="Déconnexion">🚪 <span class="logout-text">Déconnexion</span></button>
       </div>
     </div>
     <div class="chat-body">
-      <aside class="side">
+      <!-- Backdrop for mobile drawer -->
+      <div class="mobile-drawer-backdrop" id="mobileDrawerBackdrop" onclick="toggleMobileDrawer(false)"></div>
+
+      <aside class="side" id="chatSidebar">
+        <div class="mobile-drawer-header">
+          <div class="mobile-drawer-title">📋 Contrats &amp; Raccourcis</div>
+          <button class="mobile-drawer-close" onclick="toggleMobileDrawer(false)" type="button" title="Fermer">✕</button>
+        </div>
+
         <!-- Client Contracts Section (Hidden for Collaborator) -->
         <div id="clientContractsSection" class="contracts-container" style="display:none;">
           <div class="label">📋 Vos Contrats Détenus</div>
@@ -877,6 +894,230 @@
     cursor: not-allowed;
     transform: none;
   }
+
+  /* Mobile / Drawer Toggle & Drawer Header */
+  .mobile-drawer-toggle {
+    display: none;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--white);
+    font-size: 16px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.2s ease;
+  }
+  .mobile-drawer-toggle:hover {
+    background: var(--panel);
+    border-color: var(--violet);
+  }
+  .mobile-drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 95;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .mobile-drawer-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .mobile-drawer-header {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-drawer-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .mobile-drawer-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .mobile-drawer-close:hover {
+    color: var(--white);
+    background: rgba(255,255,255,0.08);
+  }
+
+  /* Responsive Design for Tablets and Mobiles */
+  @media (max-width: 900px) {
+    .welcome-inner {
+      flex-direction: column-reverse;
+      text-align: center;
+      gap: 20px;
+      padding: 20px 0;
+    }
+    .welcome-copy p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .eyebrow, .logo-row {
+      justify-content: center;
+    }
+    .welcome-visual img {
+      max-width: 220px;
+      max-height: 160px;
+      object-fit: cover;
+    }
+    .welcome-contracts-preview {
+      text-align: left;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+    }
+    .app {
+      height: 100%;
+      height: 100dvh;
+      width: 100vw;
+    }
+    #loginScreen, #welcome, #chatScreen {
+      height: 100%;
+      height: 100dvh;
+    }
+    #loginScreen {
+      padding: 16px;
+      overflow-y: auto;
+    }
+    #welcome {
+      overflow-y: auto;
+      align-items: flex-start;
+      padding: 24px 16px 40px;
+    }
+    .login-card {
+      padding: 28px 20px 22px;
+      border-radius: 14px;
+      margin: auto;
+    }
+    .field input {
+      font-size: 16px; /* Prevents auto-zoom on iOS */
+    }
+    
+    .chat-header {
+      padding: 8px 12px;
+      height: 52px;
+    }
+    .chat-header .sub {
+      display: none;
+    }
+    .chat-header .brand {
+      gap: 8px;
+    }
+    .chat-header .slash, .chat-header .word { font-size: 18px; }
+    .header-right {
+      gap: 8px;
+    }
+    .status-text, .logout-text {
+      display: none;
+    }
+    .back-btn {
+      padding: 6px 9px;
+      font-size: 13px;
+    }
+    .mobile-drawer-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mobile-drawer-backdrop {
+      display: block;
+    }
+    .mobile-drawer-header {
+      display: flex;
+    }
+    
+    /* Off-canvas mobile sidebar drawer */
+    .side {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 84%;
+      max-width: 320px;
+      height: 100%;
+      height: 100dvh;
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 12px 0 35px rgba(0, 0, 0, 0.85);
+      padding: 18px 16px 28px;
+      border-right: 1px solid var(--border);
+    }
+    .side.open {
+      transform: translateX(0);
+    }
+
+    .chat-body {
+      height: calc(100% - 52px);
+      height: calc(100dvh - 52px);
+    }
+    .solife-messages {
+      padding: 14px 12px;
+      gap: 12px;
+    }
+    .msg-row {
+      gap: 8px;
+      max-width: 100%;
+    }
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+    .msg-bubble {
+      padding: 10px 14px;
+      font-size: 13px;
+      max-width: 88%;
+      line-height: 1.5;
+    }
+    .msg-bubble table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+    .typing-indicator {
+      margin-left: 36px;
+      padding: 8px 12px;
+    }
+    .solife-chat-input-box {
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+      gap: 8px;
+    }
+    .solife-textarea {
+      font-size: 16px !important; /* Prevents auto zoom on mobile keyboard */
+      padding: 9px 12px;
+      height: 42px;
+    }
+    .solife-send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 9px;
+    }
+  }
 </style>
 
 <script>
@@ -904,7 +1145,7 @@
       if (tabClient) tabClient.classList.add('active');
       if (tabCollab) tabCollab.classList.remove('active');
       if (labelUser) labelUser.textContent = "Identifiant Client";
-      if (inputUser) inputUser.placeholder = "ex: fedi.nefoussi ou dorra.bensalah";
+      if (inputUser) inputUser.placeholder = "ex: fedi.nefoussi";
     }
   };
 
@@ -947,7 +1188,7 @@
         const data = await response.json();
 
         if (response.ok && data.success) {
-          const userRole = data.role || (username.includes('fedi') || username.includes('dorra') ? 'client' : 'collaborateur');
+          const userRole = data.role || (username.includes('fedi') || username.includes('client') ? 'client' : 'collaborateur');
           
           if (currentRoleTab === 'collaborateur' && userRole === 'client') {
             showLoginError("⛔ Accès refusé : Ce compte est un compte Client. Veuillez vous connecter via l'onglet '👤 Client Assuré'.");
@@ -959,22 +1200,15 @@
           }
 
           const role = userRole;
-          const nom = data.nom || (role === 'client' ? (username.includes('fedi') ? 'Nefoussi Fedi' : 'Ben Salah Dorra') : 'Collaborateur Solife');
-          const party_id = data.party_id || (username.includes('fedi') ? 'TP-10001' : 'TP-10002');
+          const nom = data.nom || (role === 'client' ? 'Nefoussi Fedi' : 'Collaborateur Solife');
+          const party_id = data.party_id || (role === 'client' ? 'TP-10001' : 'COL-001');
           
           let contracts = data.contracts || [];
           if (role === 'client' && contracts.length === 0) {
-            if (username.includes('fedi')) {
-              contracts = [
-                { contract_number: "SOL-2022-7710", produit: "Solife Avenir Épargne", statut: "En vigueur", valeur: "85 400 €" },
-                { contract_number: "SOL-2024-3320", produit: "Solife Plan Retraite Sérénité", statut: "En vigueur", valeur: "32 150 €" }
-              ];
-            } else {
-              contracts = [
-                { contract_number: "SOL-2023-5540", produit: "Solife Sérénité Patrimoine", statut: "En vigueur", valeur: "62 800 €" },
-                { contract_number: "SOL-2025-1190", produit: "Solife Protection Santé & Prévoyance", statut: "En vigueur", valeur: "18 500 €" }
-              ];
-            }
+            contracts = [
+              { contract_number: "SOL-2022-7710", produit: "Solife Avenir Épargne", statut: "En vigueur", valeur: "85 400 €" },
+              { contract_number: "SOL-2024-3320", produit: "Solife Plan Retraite Sérénité", statut: "En vigueur", valeur: "32 150 €" }
+            ];
           }
 
           currentUser = { username, role, nom, party_id, contracts };
@@ -988,7 +1222,7 @@
       } catch(err) {
         // Fallback local sécurisé
         if (password === 'password123') {
-          const isClient = username.includes('fedi') || username.includes('dorra');
+          const isClient = username.includes('fedi') || username.includes('client') || currentRoleTab === 'client';
           const role = isClient ? 'client' : 'collaborateur';
           
           if (currentRoleTab === 'collaborateur' && role === 'client') {
@@ -1000,15 +1234,12 @@
             return;
           }
 
-          const nom = username.includes('fedi') ? 'Nefoussi Fedi' : (username.includes('dorra') ? 'Ben Salah Dorra' : 'Collaborateur Solife');
-          const party_id = username.includes('fedi') ? 'TP-10001' : 'TP-10002';
-          const contracts = username.includes('fedi') ? [
+          const nom = isClient ? 'Nefoussi Fedi' : 'Collaborateur Solife';
+          const party_id = isClient ? 'TP-10001' : 'COL-001';
+          const contracts = isClient ? [
             { contract_number: "SOL-2022-7710", produit: "Solife Avenir Épargne", statut: "En vigueur", valeur: "85 400 €" },
             { contract_number: "SOL-2024-3320", produit: "Solife Plan Retraite Sérénité", statut: "En vigueur", valeur: "32 150 €" }
-          ] : (username.includes('dorra') ? [
-            { contract_number: "SOL-2023-5540", produit: "Solife Sérénité Patrimoine", statut: "En vigueur", valeur: "62 800 €" },
-            { contract_number: "SOL-2025-1190", produit: "Solife Protection Santé & Prévoyance", statut: "En vigueur", valeur: "18 500 €" }
-          ] : []);
+          ] : [];
 
           currentUser = { username, role, nom, party_id, contracts };
           applyRoleInterface(currentUser);
@@ -1267,17 +1498,33 @@
     }
   }
 
+  window.toggleMobileDrawer = function(forceState) {
+    const side = document.getElementById('chatSidebar');
+    const backdrop = document.getElementById('mobileDrawerBackdrop');
+    if (!side || !backdrop) return;
+    const shouldOpen = (typeof forceState === 'boolean') ? forceState : !side.classList.contains('open');
+    if (shouldOpen) {
+      side.classList.add('open');
+      backdrop.classList.add('open');
+    } else {
+      side.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+  };
+
   window.startChat = function(){
     const welcome = document.getElementById('welcome');
     const chatScreen = document.getElementById('chatScreen');
     if (welcome) welcome.classList.add('hidden');
     if (chatScreen) chatScreen.classList.add('visible');
+    toggleMobileDrawer(false);
     buildNativeChatUI();
   };
 
   window.goBack = function(){
     const chatScreen = document.getElementById('chatScreen');
     const loginScreen = document.getElementById('loginScreen');
+    toggleMobileDrawer(false);
     if (chatScreen) chatScreen.classList.remove('visible');
     if (loginScreen) loginScreen.classList.remove('hidden');
     currentUser = null;
@@ -1288,6 +1535,9 @@
   };
 
   window.askQuestionText = function(text){
+    if (window.innerWidth <= 768) {
+      toggleMobileDrawer(false);
+    }
     const cleanText = text.replace(/^[^\wÀ-ÿ]+/g, '').trim();
     const input = document.getElementById('solifeInput');
     if (input) {

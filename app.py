@@ -65,11 +65,6 @@ BASE DE CONNAISSANCES SOLIFE :
        * Garanties : Rente éducation de 6 000,00 € / an jusqu'aux 25 ans de l'enfant
        * Bénéficiaires : Rayan Nefoussi (Enfant, 100%)
        * Total global client Fedi : 101 855 € versés, 117 550 € d'encours total, +15 695 € de plus-value nette (+15,41%), 500 €/mois épargnés.
-
-   • Client Mme Dorra Ben Salah (Party ID : TP-10002, Email : dorra.bensalah@solife.com) :
-     - Contrat 1 : SOL-2023-5540 (SL-SERENITE) — 62 800,00 € (Versements : 55 000 €, +7 800 €) | 250 €/mois le 8
-     - Contrat 2 : SOL-2025-1190 (SL-SANTE) — 18 500,00 € (Versements : 17 000 €, +1 500 €) | 150 €/mois le 15
-     - Total global Dorra : 81 300 € d'encours, 400 €/mois de versements programmés.
 """
 
 
@@ -368,7 +363,7 @@ def generate_fallback_chat_response(text, payload):
                 "3. **Prise d'effet :** Immédiate dès enregistrement dans le moteur Solife."
             )
 
-        if any(k in text_lower for k in ["fedi", "dorra", "tp-10001", "tp-10002", "donnée personnelle", "données personnelles", "coordonnée", "coordonnées", "client", "assuré"]):
+        if any(k in text_lower for k in ["fedi", "tp-10001", "donnée personnelle", "données personnelles", "coordonnée", "coordonnées", "client", "assuré"]):
             return (
                 "🔒 **Accès Restreint — Protection des Données & Confidentialité (RGPD)**\n\n"
                 "En tant que collaborateur, vous n'avez aucun accès aux données personnelles, coordonnées ou dossiers individuels des clients assurés.\n\n"
@@ -441,13 +436,6 @@ DEMO_USERS = {
         "nom": "Nefoussi Fedi",
         "party_id": "TP-10001",
         "email": "fedi.nefoussi@solife.com"
-    },
-    "dorra.bensalah": {
-        "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
-        "role": "client",
-        "nom": "Ben Salah Dorra",
-        "party_id": "TP-10002",
-        "email": "dorra.bensalah@solife.com"
     },
     "collaborateur": {
         "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
