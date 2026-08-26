@@ -1,0 +1,163 @@
+=== SLIDE 1 ===
+E N H A N C I N G  C U S T O ME R  E X P E R I E N C E  T H R O U G H
+A R T I F I C I A L  I N T E L L I G E N C E
+E N H A N C I N G  C U S T O ME R  E X P E R I E N C E  T H R O U G H
+A R T I F I C I A L  I N T E L L I G E N C E
+A I  C U S T O M E R
+A S S I S T A N T
+F O R  S O L I F E
+Presented By: Nefoussi Fedi
+
+=== SLIDE 2 ===
+Solife est un progiciel qui gère l'intégralité du
+cycle de vie des contrats d'assurance-vie, de
+la souscription aux prestations finales.
+ À chaque étape du cycle de vie, un flux
+continu de données s'accumule à travers de
+multiples écrans.
+Introduction
+Learn More
+
+=== SLIDE 3 ===
+.Cette complexité crée un goulet d'étranglement
+quotidien pour les gestionnaires et pénalise
+l'expérience client.
+.Comment transformer cette masse de données
+complexes en réponses instantanées et claires
+grâce à l'IA ?"
+Problématique
+Learn More
+
+=== SLIDE 4 ===
+🤖 Faciliter et accélérer l'accès à l'information
+pour tous les utilisateurs de Solife.
+🔒 Garantir une sécurité et une confidentialité
+absolues sur l'ensemble des données traitées.
+💡 LA SOLUTION : AI Customer Assistant for Solife
+Learn More
+
+=== SLIDE 5 ===
+L e s
+f o n c t i o n a l i t é s
+d e  c e  c h a t b o t
+
+=== SLIDE 6 ===
+1. AI
+Customer
+Chatbot
+Le chatbot répond instantanément à
+toute question concernant
+l'écosystème Solife.
+
+=== SLIDE 7 ===
+2 .  A I
+P o r t f o l i o
+S u m m a r y
+G e n e r a t o r
+
+=== SLIDE 8 ===
+3. AI
+Smart
+Insights
+
+=== SLIDE 9 ===
+
+
+=== SLIDE 10 ===
+P a r t i e  p r a t i q u e
+
+=== SLIDE 11 ===
+Les outils que jai utilisé
+L'Orchestrateur Central
+(ou Le Cerveau)
+ La Mémoire Vectorielle
+(ou La Recherche)
+Le Registre Historique (ou
+La Sauvegarde)
+n 8 n
+Q d r a n t
+M o n g o D B
+
+=== SLIDE 12 ===
+Le Moteur IA (ou Le
+Générateur)
+ L'Interface Client (ou La Vitrine)
+ L'Armature Globale (ou Le
+Conteneur)
+Les outils que jai utilisé
+O lla m a
+
+=== SLIDE 13 ===
+
+
+=== SLIDE 14 ===
+
+
+=== SLIDE 15 ===
+É t a p e s  r é a l i s é e s
+
+=== SLIDE 16 ===
+Ingestion et Vectorisation de 59 PDFs Solife
+
+=== SLIDE 17 ===
+Workflow « Auth - Connexion »
+
+=== SLIDE 18 ===
+🧠 Agent Autonome
+LangChain
+L'agent décide lui-même
+d'interroger la base
+vectorielle Qdrant
+(topK=10) et consulte la
+mémoire de session
+dans MongoDB.
+Learn More
+Workflow Principal RAG (Agent IA Autonome)
+
+=== SLIDE 19 ===
+D é m o n s t r a t i o n
+
+=== SLIDE 20 ===
+Accès sécurisé : une authentification par identifiant/mot de passe protège l'accès au chatbot.
+
+=== SLIDE 21 ===
+
+
+=== SLIDE 22 ===
+Réponses fiables : il s'appuie uniquement sur la documentation interne Solife, sans jamais inventer
+d'information.
+
+=== SLIDE 23 ===
+Mémoire de conversation : l'assistant se souvient des échanges précédents grâce à un stockage
+persistant, même après une actualisation de la page.
+
+=== SLIDE 24 ===
+Multilingue automatique : il répond dans la même langue que celle utilisée dans la question, sans
+configuration manuelle.
+
+=== SLIDE 25 ===
+Robuste aux fautes de frappe : il comprend les questions même mal orthographiées ou
+formulées de façon approximative.
+
+=== SLIDE 26 ===
+Avantages & Succès Techniques Réalisés
+
+=== SLIDE 27 ===
+Limites Actuelles & Feuille de Route (API Solife)
+
+=== SLIDE 28 ===
+Conclusion
+Ce projet propose un AI Customer Assistant destiné à
+améliorer l'expérience des utilisateurs de Solife en
+automatisant les interactions les plus courantes. Grâce à un
+chatbot intelligent, à un générateur de synthèses de
+portefeuille et à un système d'insights personnalisés, les
+clients peuvent obtenir rapidement les informations dont ils
+ont besoin sans dépendre systématiquement d'un
+conseiller
+
+=== SLIDE 29 ===
+P OU R  V OT R E  A T T E N T I ON
+P OU R  V OT R E  A T T E N T I ON
+M E R C I
+

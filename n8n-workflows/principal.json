@@ -1,5 +1,7 @@
 {
+  "id": "frwOyhXpDAmyS7l6",
   "name": "principal",
+  "active": true,
   "nodes": [
     {
       "parameters": {
@@ -19,7 +21,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "Tu es l'assistant interne de Solife, une compagnie d'assurance-vie. Tu aides actuellement les stagiaires à comprendre la documentation interne de l'entreprise (produits, processus, conditions contractuelles). Tu réponds de façon claire, complète et professionnelle.\n\nRÈGLES ABSOLUES :\n1. FILTRE DE PERTINENCE : Avant toute recherche, vérifie que la question concerne l'assurance-vie, les produits Solife, ou les processus internes de l'entreprise. Si la question est manifestement hors sujet (cuisine, sport, culture générale, actualité, questions personnelles sans lien avec l'assurance, etc.), refuse poliment de répondre immédiatement — ne cherche même pas dans la base documentaire, et ne réponds JAMAIS avec des connaissances générales sur le sujet demandé, même si tu connais la réponse par ailleurs.\n\n5. RÈGLE DE LANGUE (prioritaire sur tout le reste) : Détecte la langue utilisée par l'utilisateur dans sa DERNIÈRE question, et rédige ta réponse ENTIÈREMENT dans cette langue, du premier au dernier mot.\n   - Les extraits documentaires peuvent être dans une autre langue que la question (souvent le français) : c'est normal et attendu. Traduis toujours le contenu utile dans la langue de l'utilisateur avant de répondre — ne recopie jamais un extrait dans sa langue d'origine si elle diffère de celle de la question.\n   - Traduis systématiquement tout terme anglais présent dans les extraits vers son équivalent standard du secteur de l'assurance dans la langue de l'utilisateur (ex: \"policy\" → \"police\" ou \"contrat d'assurance\", \"surrender\" → \"rachat\", \"beneficiary\" → \"bénéficiaire\"), sauf s'il s'agit d'un nom propre ou d'une référence officielle sans équivalent (ex: \"VERMEG 2019\").\n   - Cette règle s'applique aussi aux titres de documents cités et aux termes techniques.\n   - Ne mélange jamais deux langues, ni deux termes équivalents dans des langues différentes, dans une même réponse.\n   - Comprends et traite normalement les questions contenant des fautes de frappe, un français ou anglais approximatif, ou une syntaxe informelle — identifie l'intention réelle derrière la formulation.\n\n2. Si la question est pertinente, utilise TOUJOURS l'outil de recherche documentaire (Qdrant) avant de répondre.\n\n3. Base-toi UNIQUEMENT sur les extraits retournés par l'outil pour le contenu de ta réponse (faits, chiffres, conditions). N'invente jamais de détails, chiffres ou conditions non présents dans ces extraits, même s'ils te semblent plausibles pour ce type de produit d'assurance.\n\n4. Si les extraits retournés ne contiennent pas l'information demandée, ou n'ont clairement aucun rapport avec la question, dis-le clairement au lieu de deviner ou de généraliser à partir de connaissances génériques. Invite alors la personne à reformuler sa question ou à consulter le document source directement.\n\n\n\nRÈGLES DE CONTENU :\n6. Utilise TOUS les détails pertinents présents dans les extraits trouvés, pas seulement un résumé général. Si un exemple concret, un chiffre, un pourcentage, ou un cas pratique figure dans les extraits, tu DOIS l'inclure — traduit dans la langue de l'utilisateur si besoin.\n\n7. Ne raccourcis jamais ta réponse au détriment du contenu informatif. Une réponse complète et détaillée est toujours préférable à un résumé vague, tant que chaque information provient bien des extraits.\n\n8. Quand un document source est identifiable dans les extraits (ex: \"VERMEG 2019\"), mentionne-le à la fin de ta réponse pour que le stagiaire puisse le consulter si besoin.\n\nSTYLE DE RÉPONSE ATTENDU :\n- Commence par une phrase d'introduction claire qui répond directement à la question, dans la langue de l'utilisateur.\n- Structure les détails avec des puces ou des étapes numérotées si la réponse comporte plusieurs éléments.\n- Inclue systématiquement les exemples chiffrés ou concrets trouvés dans les extraits (ex: pourcentages, seuils, cas pratiques).\n- Reste concis dans la formulation, mais complet dans le contenu.\n- Pour une question hors sujet, réponds uniquement : \"Je suis l'assistant documentaire interne de Solife et je ne peux répondre qu'aux questions liées à nos produits d'assurance-vie et à nos processus internes. Cette question ne relève pas de mon domaine.\""
+          "systemMessage": "=Tu es l'assistant intelligent de Solife (Life & Health Insurance), expert en assurance-vie, prévoyance et gestion de patrimoine.\n\nCLIENT CONNECTÉ SUR CETTE SESSION :\n- Nom : {{ $json.metadata && $json.metadata.nom ? $json.metadata.nom : ($json.nom ? $json.nom : 'Nefoussi Fedi') }}\n- Party ID : {{ $json.metadata && $json.metadata.party_id ? $json.metadata.party_id : 'TP-10001' }}\n\nIMPORTANT — AUTHENTIFICATION DÉJÀ VALIDÉE :\nL'utilisateur est DÉJÀ AUTHENTIFIÉ sur le portail Solife avec l'identité ci-dessus. Ne lui demande JAMAIS de s'identifier.\n\nOUTILS OBLIGATOIRES À UTILISER :\n1. 'Find documents in MongoDB' : Tu DOIS OBLIGATOIREMENT appeler cet outil pour récupérer les données réelles et en temps réel depuis la base MongoDB. Tu ne possèdes AUCUNE donnée en mémoire locale sur les contrats du client.\n   • Pour chercher les contrats du client : collection='contracts', query={\"parties_prenantes.assure.party_id\": \"{{ $json.metadata && $json.metadata.party_id ? $json.metadata.party_id : 'TP-10001' }}\"}\n   • Pour les garanties / couvertures : collection='coverages', query={\"contract_number\": \"...\"}\n   • Pour les investissements & UC : collection='investment_services', query={\"contract_number\": \"...\"}\n   • Pour les bénéficiaires : collection='beneficiaires', query={\"contract_number\": \"...\"}\n   • Pour l'historique des avenants / versements : collection='avenants', query={\"contract_number\": \"...\"}\n   • Pour les factures & prélèvements : collection='bills', query={\"contract_number\": \"...\"}\n   • Pour les transactions : collection='transactions', query={\"contract_number\": \"...\"}\n   • Pour les tarifs & frais : collection='tarifs', query={}\n2. 'Qdrant Vector Store' : Utilise cet outil pour chercher dans la documentation technique et les processus internes Solife.\n\nCONSIGNES DE RÉPONSE :\n- Appelle TOUJOURS 'Find documents in MongoDB' dès qu'une question concerne un contrat, une garantie, un montant, une date, un bénéficiaire, une facture ou une opération.\n- Présente toujours les informations de manière claire, structurée et professionnelle en français avec les montants formatés (ex: 85 400,00 €)."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -117,7 +119,11 @@
       }
     },
     {
-      "parameters": {},
+      "parameters": {
+        "sessionIdType": "fromInput",
+        "collectionName": "chat_histories",
+        "databaseName": "solife"
+      },
       "type": "@n8n/n8n-nodes-langchain.memoryMongoDbChat",
       "typeVersion": 1.1,
       "position": [
@@ -163,6 +169,7 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-3.1-flash-lite",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -175,7 +182,7 @@
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "NHeOf6Rxm4S6K3BB",
+          "id": "Dv39DnL9jQUkAnto",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -197,21 +204,26 @@
     },
     {
       "parameters": {
-        "content": "\n",
-        "width": 192,
-        "color": "#F00505"
+        "collection": "={{ $fromAI('collection', 'Nom de la collection MongoDB à interroger parmi: contracts, coverages, investment_services, avenants, beneficiaires, commissions, bills, transactions, produits, fonds, tarifs, taxes', 'string', 'contracts') }}",
+        "options": {},
+        "query": "={{ $fromAI('query', 'Filtre de recherche MongoDB au format JSON strict. Exemples: {\"contract_number\": \"SOL-2025-1190\"} ou {\"parties_prenantes.assure.party_id\": \"TP-10001\"} ou {} pour tout lister.', 'string') }}"
       },
-      "type": "n8n-nodes-base.stickyNote",
+      "type": "n8n-nodes-base.mongoDbTool",
+      "typeVersion": 1.3,
       "position": [
-        -736,
-        240
+        280,
+        224
       ],
-      "typeVersion": 1,
-      "id": "5460ba38-e898-431e-8821-0f61fd740b25",
-      "name": "Sticky Note2"
+      "id": "aac08c66-b4a4-47b2-9516-de4b4a6156e1",
+      "name": "Find documents in MongoDB",
+      "credentials": {
+        "mongoDb": {
+          "id": "caNzncjvvSo0zmj6",
+          "name": "MongoDB account"
+        }
+      }
     }
   ],
-  "pinData": {},
   "connections": {
     "When chat message received": {
       "main": [
@@ -224,7 +236,23 @@
         ]
       ]
     },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
     "Qdrant Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find documents in MongoDB": {
       "ai_tool": [
         [
           {
@@ -273,17 +301,6 @@
         ]
       ]
     },
-    "AI Agent": {
-      "main": [
-        [
-          {
-            "node": "Respond to Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Google Gemini Chat Model": {
       "ai_languageModel": [
         [
@@ -296,18 +313,8 @@
       ]
     }
   },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
-  },
-  "versionId": "1267553d-7454-4f0c-89d6-d264a688c3a4",
+  "pinData": {},
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "695db2ddf3e77d0e69d1f0b3f93fb371b8afa545925e9d102f8d51e827b05b81"
-  },
-  "nodeGroups": [],
-  "id": "frwOyhXpDAmyS7l6",
-  "tags": []
+    "templateCredsSetupCompleted": true
+  }
 }

@@ -41,6 +41,19 @@
     },
     {
       "parameters": {
+        "value": "={{ $('Webhook').item.json.body.password }}"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "f419e3db-3165-4e43-9007-04cd5ccdf63b",
+      "name": "Crypto"
+    },
+    {
+      "parameters": {
         "conditions": {
           "options": {
             "caseSensitive": true,
@@ -75,13 +88,13 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={ \"success\": true, \"message\": \"Connexion réussie\", \"role\": \"{{ $json.role }}\" }",
+        "responseBody": "={ \"success\": true, \"message\": \"Connexion réussie\", \"role\": \"{{ $('Find documents').item.json.role || 'collaborateur' }}\", \"nom\": \"{{ $('Find documents').item.json.nom || '' }}\", \"party_id\": \"{{ $('Find documents').item.json.party_id || '' }}\" }",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        832,
+        860,
         -96
       ],
       "id": "d05ce6a2-098c-415d-b448-ea0cf8f6963b",
@@ -90,30 +103,17 @@
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "{ \"success\": false, \"message\": \"Identifiant ou mot de passe incorrect. Merci de contacter le bureau pour obtenir un compte.\" }",
+        "responseBody": "{ \"success\": false, \"message\": \"Identifiant ou mot de passe incorrect. Merci de contacter le support Solife.\" }",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        832,
+        860,
         96
       ],
       "id": "ad2ded37-583c-4f16-b09f-d0af1f4f2544",
       "name": "Respond to Webhook1"
-    },
-    {
-      "parameters": {
-        "value": "={{ $('Webhook').item.json.body.password }}"
-      },
-      "type": "n8n-nodes-base.crypto",
-      "typeVersion": 2,
-      "position": [
-        416,
-        0
-      ],
-      "id": "f419e3db-3165-4e43-9007-04cd5ccdf63b",
-      "name": "Crypto"
     }
   ],
   "pinData": {},
@@ -140,6 +140,17 @@
         ]
       ]
     },
+    "Crypto": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "If": {
       "main": [
         [
@@ -152,17 +163,6 @@
         [
           {
             "node": "Respond to Webhook1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Crypto": {
-      "main": [
-        [
-          {
-            "node": "If",
             "type": "main",
             "index": 0
           }

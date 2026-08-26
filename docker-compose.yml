@@ -25,16 +25,11 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
       - ./n8n-workflows:/n8n-workflows:ro
-    command: /bin/sh -c "n8n import:workflow --separate --input=/n8n-workflows && n8n start"
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["n8n import:workflow --separate --input=/n8n-workflows && n8n publish:workflow --id=V1PczdqDj0vl9tjG && n8n publish:workflow --id=frwOyhXpDAmyS7l6 && n8n start"]
     networks:
       - solife-network
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:5678/healthz || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     depends_on:
       mongodb-container:
         condition: service_healthy
@@ -82,5 +77,6 @@ volumes:
 
 networks:
   solife-network:
+    name: solife-network
     external: true
 
