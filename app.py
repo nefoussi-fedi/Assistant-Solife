@@ -243,7 +243,7 @@ def generate_fallback_chat_response(text, payload):
 
     else:
         # Role == Collaborateur
-        if any(k in text_lower for k in ["devise", "monnaie", "currency", "eur", "euro"]):
+        if any(k in text_lower for k in ["devis", "monn", "curr", "eur", "franc", "dollar", "chf", "usd"]):
             return (
                 "### 💶 Devises Utilisées sur la Plateforme Solife\n\n"
                 "1. **Devise Principale :** L'**Euro (EUR / €)** est la devise officielle de référence pour la tenue des comptes, les souscriptions, les calculs de valeur de rachat et les prélèvements.\n"
@@ -251,7 +251,7 @@ def generate_fallback_chat_response(text, payload):
                 "3. **Frais et Fiscalité :** L'ensemble des frais de gestion et déclarations fiscales sont calculés et consolidés en **Euros (EUR)**."
             )
 
-        if any(k in text_lower for k in ["c'est quoi solife", "est quoi solife", "qui est solife", "qu'est-ce que solife", "présentation solife", "presentation solife", "c'est quoi", "domaine"]):
+        if any(k in text_lower for k in ["c'est quoi solife", "est quoi solife", "qui est solife", "qu'est-ce que solife", "présentation solife", "presentation solife", "c'est quoi", "domaine", "solif"]):
             return (
                 "### 🌐 À Propos de Solife (Life & Health Insurance)\n\n"
                 "**Solife** est une solution logicielle et plateforme technologique innovante de référence, dédiée à la gestion complète des contrats d'**Assurance-Vie, de Prévoyance et d'Épargne Retraite** pour les assureurs, mutuelles et courtiers.\n\n"
@@ -263,7 +263,7 @@ def generate_fallback_chat_response(text, payload):
                 "En tant qu'assistant interne, je réponds à toutes vos questions sur les règles de gestion et la documentation technique Solife."
             )
 
-        if any(k in text_lower for k in ["produit", "gamme", "sl-avenir", "sl-retraite", "sl-serenite", "sl-sante"]):
+        if any(k in text_lower for k in ["produit", "gamme", "avenir", "retrait", "serenit", "sante", "santé", "catalogue"]):
             return (
                 "### 📋 Gamme des Produits Solife\n\n"
                 "1. 🛡️ **SL-AVENIR (Solife Avenir Épargne) :** Contrat d'assurance-vie multisupport associant sécurité du Fonds Euros et performance responsable (Actions Monde ESG, Obligations Vertes).\n"
@@ -272,7 +272,7 @@ def generate_fallback_chat_response(text, payload):
                 "4. 🛡️ **SL-SANTE (Protection Santé & Prévoyance) :** Couverture complète prévoyance (capital décès jusqu'à 200k€ et indemnités journalières)."
             )
 
-        if any(k in text_lower for k in ["fonds", "esg", "unité de compte", "unite de compte", "uc", "support"]):
+        if any(k in text_lower for k in ["fond", "esg", "unit", "uc", "support", "action", "obligat", "clim"]):
             return (
                 "### 🌿 Supports d'Investissement & Critères ESG Solife\n\n"
                 "Solife propose une gamme de supports conformes aux normes **SFDR Article 8 et 9** et labellisés **ISR / Greenfin** :\n\n"
@@ -283,7 +283,7 @@ def generate_fallback_chat_response(text, payload):
                 "* **Solife Immobilier Durable :** SCPI investies dans des bâtiments écologiques certifiés HQE."
             )
 
-        if any(k in text_lower for k in ["rebalancing", "rééquilibrage", "reequilibrage"]):
+        if any(k in text_lower for k in ["rebalanc", "rééquilibr", "reequilibr", "arbitrag"]):
             return (
                 "### 📖 Règle Métier Solife : Rebalancing Automatique\n\n"
                 "Le service de **Rebalancing Automatique** permet de maintenir l'allocation d'actifs définie par le souscripteur :\n\n"
@@ -293,7 +293,7 @@ def generate_fallback_chat_response(text, payload):
                 "4. **Compatibilité :** Incompatible avec l'option 'Investissement Progressif', mais cumulable avec la 'Garantie Plancher'."
             )
 
-        if any(k in text_lower for k in ["rachat", "surrender", "partiel", "total"]):
+        if any(k in text_lower for k in ["rachat", "surrender", "partiel", "total", "retrait"]):
             return (
                 "### 💸 Règle Métier Solife : Rachat Partiel et Total (Surrender)\n\n"
                 "1. **Rachat Partiel :** Montant minimum de 1 000,00 €. Le solde restant sur le contrat doit être au moins de 3 000,00 €.\n"
@@ -302,7 +302,7 @@ def generate_fallback_chat_response(text, payload):
                 "4. **Frais de sortie :** 0 % de pénalité de rachat sur tous les contrats Solife après 1 an."
             )
 
-        if any(k in text_lower for k in ["frais", "gestion", "entrée", "versement", "arbitrage"]):
+        if any(k in text_lower for k in ["frais", "tarif", "cout", "coût", "gestion", "entree", "entrée", "barem", "barèm"]):
             return (
                 "### ⚖️ Barème Tarifaire Solife\n\n"
                 "* **Frais sur versement :** 0 % sur les versements programmés, 1 % max sur versements libres.\n"
@@ -312,7 +312,7 @@ def generate_fallback_chat_response(text, payload):
                 "* **Frais d'arbitrage :** 1 arbitrage gratuit par an, puis 0,20 % du montant arbitré (plafonné à 50 €)."
             )
 
-        if any(k in text_lower for k in ["bénéficiaire", "clause", "modifier"]):
+        if any(k in text_lower for k in ["benefic", "bénéfic", "clause", "modifi"]):
             return (
                 "### 👥 Procédure de modification de Clause Bénéficiaire\n\n"
                 "1. La modification peut être effectuée à tout moment par le souscripteur tant que le bénéficiaire n'a pas formellement accepté la clause.\n"
