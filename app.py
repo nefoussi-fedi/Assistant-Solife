@@ -243,6 +243,46 @@ def generate_fallback_chat_response(text, payload):
 
     else:
         # Role == Collaborateur
+        if any(k in text_lower for k in ["devise", "monnaie", "currency", "eur", "euro"]):
+            return (
+                "### 💶 Devises Utilisées sur la Plateforme Solife\n\n"
+                "1. **Devise Principale :** L'**Euro (EUR / €)** est la devise officielle de référence pour la tenue des comptes, les souscriptions, les calculs de valeur de rachat et les prélèvements.\n"
+                "2. **Gestion Multi-devises (UC Internationales) :** La plateforme Solife supporte également des supports d'investissement libellés en **USD ($)** et **CHF (CHF)** avec conversion automatique au taux de change quotidien de la BCE.\n"
+                "3. **Frais et Fiscalité :** L'ensemble des frais de gestion et déclarations fiscales sont calculés et consolidés en **Euros (EUR)**."
+            )
+
+        if any(k in text_lower for k in ["c'est quoi solife", "est quoi solife", "qui est solife", "qu'est-ce que solife", "présentation solife", "presentation solife", "c'est quoi", "domaine"]):
+            return (
+                "### 🌐 À Propos de Solife (Life & Health Insurance)\n\n"
+                "**Solife** est une solution logicielle et plateforme technologique innovante de référence, dédiée à la gestion complète des contrats d'**Assurance-Vie, de Prévoyance et d'Épargne Retraite** pour les assureurs, mutuelles et courtiers.\n\n"
+                "#### 🛡️ Domaines d'expertise Solife :\n"
+                "* **Assurance-Vie Multisupport :** Gestion des fonds en euros et unités de compte (ESG, actions, obligations, immobilier).\n"
+                "* **Épargne Retraite (PER) :** Phase d'épargne et liquidation en rente viagère ou capital.\n"
+                "* **Prévoyance & Santé :** Garanties décès, rente éducation, arrêts de travail et indemnités journalières.\n"
+                "* **Moteur d'Arbitrage Automatisé :** Rebalancing automatique semestriel et sécurisation des plus-values.\n\n"
+                "En tant qu'assistant interne, je réponds à toutes vos questions sur les règles de gestion et la documentation technique Solife."
+            )
+
+        if any(k in text_lower for k in ["produit", "gamme", "sl-avenir", "sl-retraite", "sl-serenite", "sl-sante"]):
+            return (
+                "### 📋 Gamme des Produits Solife\n\n"
+                "1. 🛡️ **SL-AVENIR (Solife Avenir Épargne) :** Contrat d'assurance-vie multisupport associant sécurité du Fonds Euros et performance responsable (Actions Monde ESG, Obligations Vertes).\n"
+                "2. 🛡️ **SL-RETRAITE (Plan Retraite Sérénité) :** Contrat PER avec déductibilité des versements à l'entrée, rente éducation pour les enfants et garantie plancher décès.\n"
+                "3. 🛡️ **SL-SERENITE (Sérénité Patrimoine) :** Solution patrimoniale haut de gamme offrant l'accès à une large sélection d'UC internationales et gestion libre/pilotée.\n"
+                "4. 🛡️ **SL-SANTE (Protection Santé & Prévoyance) :** Couverture complète prévoyance (capital décès jusqu'à 200k€ et indemnités journalières)."
+            )
+
+        if any(k in text_lower for k in ["fonds", "esg", "unité de compte", "unite de compte", "uc", "support"]):
+            return (
+                "### 🌿 Supports d'Investissement & Critères ESG Solife\n\n"
+                "Solife propose une gamme de supports conformes aux normes **SFDR Article 8 et 9** et labellisés **ISR / Greenfin** :\n\n"
+                "* **Fonds Euros Solife Sécurité :** Capital garanti à 100% avec effet cliquet (rendement cible 2,80% - 3,20%).\n"
+                "* **Solife Actions Monde ESG :** Actions internationales d'entreprises respectant les critères environnementaux, sociaux et de gouvernance.\n"
+                "* **Solife Climat & Transition :** Fonds dédié à la décarbonation, aux énergies renouvelables et aux technologies vertes.\n"
+                "* **Solife Obligations Vertes (Green Bonds) :** Emprunts obligataires finançant des projets environnementaux certifiés.\n"
+                "* **Solife Immobilier Durable :** SCPI investies dans des bâtiments écologiques certifiés HQE."
+            )
+
         if any(k in text_lower for k in ["rebalancing", "rééquilibrage", "reequilibrage"]):
             return (
                 "### 📖 Règle Métier Solife : Rebalancing Automatique\n\n"
