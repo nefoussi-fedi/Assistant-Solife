@@ -30,6 +30,78 @@ EMBEDDING_WEBHOOK_URL = os.environ.get(
 )
 
 
+@app.route("/api/chat-proxy", methods=["GET", "POST", "OPTIONS"])
+def api_chat_proxy():
+    """Proxy universel pour relayer les requêtes du chat web vers n8n.
+    Permet aux utilisateurs sur d'autres PC, mobiles ou sur Render de discuter avec le chatbot
+    sans être bloqués par 'localhost' ou par les restrictions CORS/Mixed-Content.
+    """
+    if request.method == "OPTIONS":
+        return "", 200
+
+    n8n_host = os.environ.get("N8N_HOST", "n8n-container" if os.path.exists("/.dockerenv") else "localhost")
+    n8n_port = int(os.environ.get("N8N_PORT", 5678))
+    default_chat_url = f"http://{n8n_host}:{n8n_port}/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat"
+    target_url = os.environ.get("CHAT_WEBHOOK_URL") or default_chat_url
+
+    # Si on tourne dans Docker et que l'URL cible pointe vers localhost, remplacer par le nom de conteneur
+    if os.path.exists("/.dockerenv") and "localhost:5678" in target_url:
+        target_url = target_url.replace("localhost:5678", f"{n8n_host}:{n8n_port}")
+
+    try:
+        from urllib.request import Request, urlopen
+        from urllib.error import HTTPError
+        req_data = request.get_data()
+        headers = {"Content-Type": request.headers.get("Content-Type", "application/json")}
+        req = Request(target_url, data=req_data if request.method == "POST" else None, headers=headers, method=request.method)
+        with urlopen(req, timeout=45) as resp:
+            resp_body = resp.read()
+            return resp_body, resp.status, {"Content-Type": resp.headers.get("Content-Type", "application/json")}
+    except Exception as e:
+        return jsonify({"output": f"Désolé, je rencontre une difficulté de connexion avec le serveur d'intelligence artificielle : {e}"}), 200
+
+
+@app.route("/api/login-proxy", methods=["POST", "OPTIONS"])
+def api_login_proxy():
+    """Proxy de connexion vers n8n avec fallback sécurisé sur MongoDB."""
+    if request.method == "OPTIONS":
+        return "", 200
+
+    n8n_host = os.environ.get("N8N_HOST", "n8n-container" if os.path.exists("/.dockerenv") else "localhost")
+    n8n_port = int(os.environ.get("N8N_PORT", 5678))
+    default_login_url = f"http://{n8n_host}:{n8n_port}/webhook/solife-login"
+    target_url = os.environ.get("LOGIN_WEBHOOK_URL") or default_login_url
+
+    if os.path.exists("/.dockerenv") and "localhost:5678" in target_url:
+        target_url = target_url.replace("localhost:5678", f"{n8n_host}:{n8n_port}")
+
+    try:
+        from urllib.request import Request, urlopen
+        req_data = request.get_data()
+        headers = {"Content-Type": "application/json"}
+        req = Request(target_url, data=req_data, headers=headers, method="POST")
+        with urlopen(req, timeout=5) as resp:
+            resp_body = resp.read()
+            return resp_body, resp.status, {"Content-Type": "application/json"}
+    except Exception:
+        # Fallback direct si n8n n'est pas joignable
+        try:
+            import hashlib
+            from pymongo import MongoClient
+            payload = request.get_json(silent=True) or {}
+            username = payload.get("username", "").strip()
+            password = payload.get("password", "")
+            pw_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
+            mongo_host = os.environ.get("MONGO_HOST", "mongodb-container" if os.path.exists("/.dockerenv") else "localhost")
+            client = MongoClient(f"mongodb://{mongo_host}:27017/", serverSelectionTimeoutMS=1500)
+            u = client["solife"].users.find_one({"username": username, "password": pw_hash}, {"password": 0, "_id": 0})
+            if u:
+                return jsonify({"success": True, "message": "Connexion réussie", "role": u.get("role"), "nom": u.get("nom"), "party_id": u.get("party_id")})
+            return jsonify({"success": False, "message": "Identifiant ou mot de passe incorrect."}), 401
+        except Exception as err:
+            return jsonify({"success": False, "message": f"Erreur de connexion : {err}"}), 500
+
+
 @app.route("/")
 def index():
     return render_template(

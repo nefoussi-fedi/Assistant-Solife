@@ -695,10 +695,10 @@
 
 <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
 <script type="module">
-  import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
-
-  const LOGIN_WEBHOOK_URL = '{{ login_webhook_url }}';
-  const CHAT_WEBHOOK_URL = '{{ chat_webhook_url }}';
+  // Résolution intelligente : on utilise le proxy Flask pour garantir la connectivité
+  // depuis n'importe quel ordinateur, mobile, réseau local ou hébergement Render
+  const LOGIN_WEBHOOK_URL = window.location.origin + '/api/login-proxy';
+  const CHAT_WEBHOOK_URL = window.location.origin + '/api/chat-proxy';
 
   let currentRoleTab = 'collaborateur';
   let currentUser = null;
