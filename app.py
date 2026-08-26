@@ -18,7 +18,7 @@ def allowed_file(filename):
 # Ces URLs viennent de variables d'environnement, avec une valeur par défaut
 CHAT_WEBHOOK_URL = os.environ.get(
     "CHAT_WEBHOOK_URL",
-    "http://localhost:5678/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat",
+    "http://localhost:5678/webhook-test/solife",
 )
 LOGIN_WEBHOOK_URL = os.environ.get(
     "LOGIN_WEBHOOK_URL",
@@ -212,9 +212,8 @@ def generate_fallback_chat_response(text, payload):
 @app.route("/api/chat-proxy", methods=["GET", "POST", "OPTIONS"])
 def api_chat_proxy():
     """Proxy universel pour relayer les requêtes du chat web vers n8n.
-    Permet aux utilisateurs sur d'autres PC, mobiles ou sur Render de discuter avec le chatbot
-    sans être bloqués par 'localhost' ou par les restrictions CORS/Mixed-Content.
-    En cas d'inaccessibilité de n8n, active un moteur de réponse IA interne intelligent.
+    Utilise par défaut le webhook 'solife' (en mode test ou production).
+    En cas d'inaccessibilité de n8n, active le moteur de réponse IA interne Solife.
     """
     if request.method == "OPTIONS":
         return "", 200
@@ -224,25 +223,35 @@ def api_chat_proxy():
 
     n8n_host = os.environ.get("N8N_HOST", "n8n-container" if os.path.exists("/.dockerenv") else "localhost")
     n8n_port = int(os.environ.get("N8N_PORT", 5678))
-    default_chat_url = f"http://{n8n_host}:{n8n_port}/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat"
-    target_url = os.environ.get("CHAT_WEBHOOK_URL") or default_chat_url
 
-    if os.path.exists("/.dockerenv") and "localhost:5678" in target_url:
-        target_url = target_url.replace("localhost:5678", f"{n8n_host}:{n8n_port}")
+    custom_url = os.environ.get("CHAT_WEBHOOK_URL")
+    candidates = []
+    if custom_url:
+        candidates.append(custom_url)
+    candidates.extend([
+        f"http://{n8n_host}:{n8n_port}/webhook-test/solife",
+        f"http://{n8n_host}:{n8n_port}/webhook/solife",
+        f"http://{n8n_host}:{n8n_port}/webhook/50287b92-ed6b-4da9-880f-68114802143c/chat"
+    ])
 
-    # 1. Tentative de relais vers le workflow n8n
-    try:
-        from urllib.request import Request, urlopen
-        req_data = request.get_data()
-        headers = {"Content-Type": request.headers.get("Content-Type", "application/json")}
-        req = Request(target_url, data=req_data if request.method == "POST" else None, headers=headers, method=request.method)
-        with urlopen(req, timeout=10) as resp:
-            resp_body = resp.read()
-            return resp_body, resp.status, {"Content-Type": resp.headers.get("Content-Type", "application/json")}
-    except Exception:
-        # 2. Si n8n n'est pas accessible (ex: Render cloud), bascule instantanée sur le moteur IA de secours
-        fallback_text = generate_fallback_chat_response(chat_input, payload)
-        return jsonify({"output": fallback_text}), 200
+    from urllib.request import Request, urlopen
+    req_data = request.get_data()
+    headers = {"Content-Type": "application/json"}
+
+    for url in candidates:
+        if os.path.exists("/.dockerenv") and "localhost:5678" in url:
+            url = url.replace("localhost:5678", f"{n8n_host}:{n8n_port}")
+        try:
+            req = Request(url, data=req_data if request.method == "POST" else None, headers=headers, method=request.method)
+            with urlopen(req, timeout=12) as resp:
+                resp_body = resp.read()
+                return resp_body, resp.status, {"Content-Type": resp.headers.get("Content-Type", "application/json")}
+        except Exception:
+            continue
+
+    # Fallback instantané
+    fallback_text = generate_fallback_chat_response(chat_input, payload)
+    return jsonify({"output": fallback_text}), 200
 
 
 # Dictionnaire de secours pour l'authentification (utilisé si MongoDB/n8n n'est pas joignable, ex: hébergement cloud Render)
