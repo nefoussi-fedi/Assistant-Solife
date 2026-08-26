@@ -280,21 +280,23 @@ def generate_fallback_chat_response(text, payload):
                 "3. **Prise d'effet :** Immédiate dès enregistrement dans le moteur Solife."
             )
 
-        if any(k in text_lower for k in ["fedi", "tp-10001", "client"]):
+        if any(k in text_lower for k in ["fedi", "dorra", "tp-10001", "tp-10002", "donnée personnelle", "données personnelles", "coordonnée", "coordonnées", "client", "assuré"]):
             return (
-                "### 🔍 Fiche Client : Nefoussi Fedi (Réf : TP-10001)\n\n"
-                "* **Statut :** Client Actif — Profil Épargne & Retraite\n"
-                "* **Contrats rattachés :**\n"
-                "  1. `SOL-2022-7710` (Assurance-Vie Avenir) — 85 400,00 € (Plus-value : +13 400 €)\n"
-                "  2. `SOL-2024-3320` (PER Retraite Sérénité) — 32 150,00 € (Plus-value : +2 295 €)\n"
-                "* **Total encours sous gestion :** **117 550,00 €**\n"
-                "* **Options actives :** Rebalancing automatique, Sécurisation plus-values, Garantie plancher décès."
+                "🔒 **Accès Restreint — Protection des Données & Confidentialité (RGPD)**\n\n"
+                "En tant que collaborateur, vous n'avez aucun accès aux données personnelles, coordonnées ou dossiers individuels des clients assurés.\n\n"
+                "L'espace collaborateur est strictement réservé à :\n"
+                "* 📖 **La documentation technique Solife** (recherche documentaire Qdrant)\n"
+                "* ⚙️ **Les règles métier et processus de gestion** (rebalancing, rachats, arbitrages, clauses)\n"
+                "* 📋 **Les caractéristiques des produits d'assurance** (SL-AVENIR, SL-RETRAITE, SL-SERENITE, SL-SANTE)\n"
+                "* ⚖️ **Les barèmes tarifaires et frais**\n"
+                "* 📎 **L'indexation de nouveaux documents PDF**"
             )
 
         return (
-            "Bonjour. En tant que collaborateur Solife, vous pouvez m'interroger sur l'ensemble des règles métier, "
-            "les caractéristiques des produits (SL-AVENIR, SL-RETRAITE, SL-SERENITE), les barèmes de frais, les procédures d'avenants, "
-            "ou rechercher les données détaillées d'un assuré à partir de son nom ou identifiant (ex: TP-10001)."
+            "Bonjour. En tant que collaborateur Solife, vous avez accès à l'assistant documentaire interne. "
+            "Vous pouvez m'interroger sur l'ensemble des règles métier, le fonctionnement du rebalancing automatique, "
+            "les caractéristiques des produits (SL-AVENIR, SL-RETRAITE, SL-SERENITE, SL-SANTE), les barèmes de frais et les processus de gestion, "
+            "ou indexer de nouveaux documents PDF dans la base Qdrant."
         )
 
 

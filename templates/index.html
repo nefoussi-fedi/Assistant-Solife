@@ -669,14 +669,8 @@
           <div id="contractsList"></div>
         </div>
 
-        <!-- Collaborator Client Directory Section (Visible for Collaborator) -->
-        <div id="collaboratorDirectorySection" class="contracts-container" style="display:none;">
-          <div class="label">👥 Portefeuille Clients Solife</div>
-          <div id="collaboratorClientsList"></div>
-        </div>
-
         <!-- Suggested Questions -->
-        <div class="label" id="questionsTitle">Exemples de requêtes</div>
+        <div class="label" id="questionsTitle">Exemples de questions</div>
         <ul id="suggestedQuestions">
           <!-- Populated dynamically based on role -->
         </ul>
@@ -1113,52 +1107,26 @@
       }
 
     } else {
-      // Collaborateur
+      // Collaborateur : STRICTEMENT DOCUMENTATION & RÈGLES MÉTIER (AUCUN ACCÈS AUX DONNÉES PERSONNELLES CLIENTS)
       if (badge) { badge.textContent = 'Espace Collaborateur'; badge.className = 'role-badge collaborateur'; }
-      if (title) title.textContent = 'Assistant Gestion de Portefeuille & Documentation Solife';
-      if (desc) desc.textContent = `Consultez les dossiers et contrats des assurés Solife, accédez aux règles métier, barèmes et processus internes.`;
+      if (title) title.textContent = 'Assistant Documentation & Règles Métier Solife';
+      if (desc) desc.textContent = `Posez vos questions sur la documentation technique, les règles de gestion d'assurance-vie, les caractéristiques des produits et indexez vos PDF dans Qdrant.`;
       if (previewBox) previewBox.style.display = 'none';
 
-      const collabDirectory = document.getElementById('collaboratorDirectorySection');
-      const collabList = document.getElementById('collaboratorClientsList');
-
-      if (headerSub) headerSub.textContent = 'Espace Collaborateur — Gestion Portefeuille Clients & Règles Métier';
+      if (headerSub) headerSub.textContent = 'Espace Collaborateur — Documentation Interne & Règles Métier';
       if (clientContractsSection) clientContractsSection.style.display = 'none';
-      if (collabDirectory) collabDirectory.style.display = 'block';
       if (pdfSection) pdfSection.style.display = 'block';
-      if (questionsTitle) questionsTitle.textContent = "Actions Collaborateur & Métier";
-
-      if (collabList) {
-        collabList.innerHTML = `
-          <div class="contract-card-item" onclick="askQuestionText('Donne-moi la fiche complète, les coordonnées et les contrats du client Nefoussi Fedi (TP-10001).')">
-            <div class="num">TP-10001 • Nefoussi Fedi</div>
-            <div class="prod">2 Contrats (SL-AVENIR & SL-RETRAITE)</div>
-            <div class="meta">
-              <span>Encours : 117 550 €</span>
-              <span style="color:var(--green);">+15 695 €</span>
-            </div>
-          </div>
-          <div class="contract-card-item" onclick="askQuestionText('Donne-moi la fiche complète, les coordonnées et les contrats de la cliente Dorra Ben Salah (TP-10002).')">
-            <div class="num">TP-10002 • Ben Salah Dorra</div>
-            <div class="prod">2 Contrats (SL-SERENITE & SL-SANTE)</div>
-            <div class="meta">
-              <span>Encours : 81 300 €</span>
-              <span style="color:var(--green);">+9 300 €</span>
-            </div>
-          </div>
-        `;
-      }
+      if (questionsTitle) questionsTitle.textContent = "Exemples de requêtes métier & doc";
 
       if (suggestedQuestions) {
         suggestedQuestions.innerHTML = `
-          <li onclick="askQuestion(this)">🔍 Fiche & coordonnées personnelles du client Nefoussi Fedi (TP-10001)</li>
-          <li onclick="askQuestion(this)">📊 Synthèse des contrats et encours de Dorra Ben Salah (TP-10002)</li>
-          <li onclick="askQuestion(this)">📑 Détail et historique des avenants du contrat SOL-2022-7710</li>
-          <li onclick="askQuestion(this)">👥 Vérifier les bénéficiaires et garanties décès du client TP-10001</li>
-          <li onclick="askQuestion(this)">📖 Comment fonctionne le rebalancing automatique selon les règles Solife ?</li>
+          <li onclick="askQuestion(this)">📖 C'est quoi Solife et quels sont ses domaines d'activité ?</li>
+          <li onclick="askQuestion(this)">🔄 Comment fonctionne le rebalancing automatique selon les règles Solife ?</li>
           <li onclick="askQuestion(this)">💸 Quelles sont les règles applicables au rachat total et partiel (Surrender) ?</li>
           <li onclick="askQuestion(this)">⚖️ Quelles sont les règles de calcul des frais de gestion et d'entrée ?</li>
-          <li onclick="askQuestion(this)">📄 Quels sont les fonds en unités de compte et critères ESG disponibles ?</li>
+          <li onclick="askQuestion(this)">👥 Quelle est la procédure pour modifier une clause bénéficiaire ?</li>
+          <li onclick="askQuestion(this)">🌿 Quels sont les fonds en unités de compte et critères ESG disponibles ?</li>
+          <li onclick="askQuestion(this)">🛡️ Quelles sont les caractéristiques du produit SL-RETRAITE (PER) ?</li>
         `;
       }
     }
