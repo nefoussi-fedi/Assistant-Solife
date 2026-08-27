@@ -37,34 +37,54 @@ BASE DE CONNAISSANCES SOLIFE :
 1. PRODUITS D'ASSURANCE-VIE & PRÉVOYANCE :
    - SL-AVENIR (Solife Avenir Épargne) : Contrat multisupport d'assurance-vie, combinant fonds en euros sécurisé et unités de compte (ESG, climat, actions internationales).
    - SL-RETRAITE (Solife Plan Retraite Sérénité) : PER assurance-vie avec déductibilité fiscale, garanties décès et rente éducation.
-   - SL-SERENITE (Solife Sérénité Patrimoine) : Contrat patrimonial haut de gamme, gestion pilotée et libre.
-   - SL-SANTE (Solife Protection Santé & Prévoyance) : Prévoyance individuelle, indemnités journalières et capital décès.
+   - SL-SERENITE ou SL-PATRIMOINE (Solife Sérénité Patrimoine) : Contrat patrimonial haut de gamme, gestion pilotée et libre (Fonds Euros, Tech & IA, SCPI).
+   - SL-SANTE ou SL-PROTECT (Solife Protection Santé & Prévoyance) : Prévoyance individuelle, indemnités journalières, rente éducation et capital décès garanti.
 
 2. RÈGLES DE GESTION & FONCTIONNEMENT :
    - Rebalancing automatique : Arbitrage semestriel ou annuel 100% gratuit si une UC dévie de plus de 5% de son allocation cible.
-   - Sécurisation des plus-values : Transfert automatique vers le Fonds Euros dès que les gains dépassent un seuil (+10%).
+   - Sécurisation des plus-values : Transfert automatique vers le Fonds Euros dès que les gains dépassent un seuil (+10% ou +15%).
    - Rachat partiel / total (Surrender) : Rachat partiel dès 1 000 € (solde min 3 000 €). Aucun frais de sortie après 1 an. Règlement sous 72h ouvrées. Fiscalité : abattement annuel de 4 600 € / 9 200 € après 8 ans.
-   - Frais : 0% sur versements programmés, 0.60%/an sur Fonds Euros, 0.85%/an sur UC. 1 arbitrage gratuit/an puis 0.20%.
+   - Frais : 0% sur versements programmés, 0.60% à 0.75%/an sur Fonds Euros, 0.80% à 0.90%/an sur UC.
    - Modification de clause bénéficiaire : Possible à tout moment par formulaire signé ou acte notarié.
 
-3. DONNÉES DES CLIENTS SOLIFE :
-   • Client M. Nefoussi Fedi (Party ID : TP-10001, Email : fedi.nefoussi@solife.com) :
+3. DONNÉES ET CONTRATS DES CLIENTS SOLIFE :
+   • Client 1 : M. Nefoussi Fedi (Party ID : TP-10001, Email : fedi.nefoussi@solife.com) :
      - Contrat 1 : SOL-2022-7710 (SL-AVENIR / Solife Avenir Épargne)
        * Date d'effet : 10/04/2022 | Statut : En vigueur
        * Cumul versements : 72 000,00 € | Valeur de rachat actuelle : 85 400,00 € (Gain : +13 400,00 €, rendement annuel 4,25%)
        * Prélèvement programmé : 300,00 € / mois (le 5 de chaque mois)
        * Répartition : 55% Fonds Euros (46 970 €), 30% Solife Actions Monde ESG (25 620 €), 15% Solife Obligations Vertes (12 810 €)
        * Garanties : Capital décès garanti de 100 000,00 €
-       * Bénéficiaires : Mme Sarah Nefoussi (Épouse, 60% ou rang 1) et Rayan Nefoussi (Enfant, 40% ou rang 2)
-       * Options : Rebalancing automatique semestriel (seuil 5%), sécurisation des plus-values (+10%), garantie plancher décès.
+       * Bénéficiaires : Mme Sarah Nefoussi (Épouse, 60%) et Rayan Nefoussi (Enfant, 40%)
      - Contrat 2 : SOL-2024-3320 (SL-RETRAITE / Plan Retraite Sérénité)
        * Date d'effet : 15/01/2024 | Statut : En vigueur
        * Cumul versements : 29 855,00 € | Valeur de rachat actuelle : 32 150,00 € (Gain : +2 295,00 €, rendement annuel 3,90%)
        * Prélèvement programmé : 200,00 € / mois (le 10 de chaque mois)
-       * Répartition : 40% Fonds Euros Retraite (12 860 €), 45% Actions Climat & Transition (14 467,50 €), 15% Immobilier Responsable (4 822,50 €)
+       * Répartition : 40% Fonds Euros Retraite (12 860 €), 45% Actions Climat (14 467,50 €), 15% Immobilier Responsable (4 822,50 €)
        * Garanties : Rente éducation de 6 000,00 € / an jusqu'aux 25 ans de l'enfant
        * Bénéficiaires : Rayan Nefoussi (Enfant, 100%)
-       * Total global client Fedi : 101 855 € versés, 117 550 € d'encours total, +15 695 € de plus-value nette (+15,41%), 500 €/mois épargnés.
+
+   • Client 2 : Mme Ben Salah Dorra (Party ID : TP-10002, Email : dorra.bensalah@solife.com) :
+     - Contrat 1 : SOL-2023-5540 (SL-PATRIMOINE / Solife Sérénité Patrimoine)
+       * Date d'effet : 20/06/2023 | Statut : En vigueur
+       * Cumul versements : 55 000,00 € | Valeur de rachat actuelle : 62 800,00 € (Gain : +7 800,00 €, rendement annuel 4,80%)
+       * Versements libres (pas de prélèvement mensuel fixe)
+       * Répartition : 40% Fonds Euros Sécurité (25 120 €), 40% Solife Tech & IA (25 120 €), 20% SCPI Immobilier Premium (12 560 €)
+       * Bénéficiaires : M. Ahmed Ben Salah et Mme Fatma Ben Salah (Parents, 50% chacun)
+       * Options : Rebalancing automatique trimestriel, sécurisation des plus-values dès +15%
+     - Contrat 2 : SOL-2025-1190 (SL-PROTECT / Solife Protection Santé & Prévoyance)
+       * Date d'effet : 01/02/2025 | Statut : En vigueur
+       * Cumul versements : 17 000,00 € | Valeur d'épargne : 18 500,00 € (Gain : +1 500,00 €)
+       * Prélèvement programmé : 150,00 € / mois (le 1er de chaque mois)
+       * Répartition : 100% Fonds Euros Sécurité
+       * Garanties : Capital décès garanti de 100 000,00 € (porté à 200 000,00 € en cas d'accident), Rente Éducation de 6 000 € / an
+       * Bénéficiaires : Héritiers légaux
+
+4. RÈGLES DE CONFIDENTIALITÉ & CONTRÔLE D'ACCÈS :
+   - Si l'utilisateur connecté est M. Nefoussi Fedi (TP-10001) : il a accès UNIQUEMENT à ses contrats SOL-2022-7710 et SOL-2024-3320.
+   - Si l'utilisateur connecté est Mme Ben Salah Dorra (TP-10002) : elle a accès UNIQUEMENT à ses contrats SOL-2023-5540 et SOL-2025-1190.
+   - Si un utilisateur demande des informations sur un contrat qui ne lui appartient pas (ex: Fedi qui demande SOL-2023-5540, ou Dorra qui demande SOL-2022-7710), refuse poliment en indiquant que ce contrat ne fait pas partie de son portefeuille personnel.
+   - Si l'utilisateur est un 'collaborateur', il a accès à la documentation technique et aux règles métier générales, mais pas aux données personnelles privées des clients.
 """
 
 
