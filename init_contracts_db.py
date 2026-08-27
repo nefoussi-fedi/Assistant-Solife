@@ -8,9 +8,11 @@ if sys.platform == "win32":
 
 
 def init_contracts_db():
-    mongo_host = os.environ.get("MONGO_HOST", "localhost")
-    mongo_port = int(os.environ.get("MONGO_PORT", 27017))
-    mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/"
+    mongo_uri = os.environ.get("MONGO_URI")
+    if not mongo_uri:
+        mongo_host = os.environ.get("MONGO_HOST", "localhost")
+        mongo_port = int(os.environ.get("MONGO_PORT", 27017))
+        mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/"
 
     print(f"[*] Connexion à MongoDB sur {mongo_uri}...")
     client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
@@ -26,6 +28,7 @@ def init_contracts_db():
     # =====================================================================
     # BASES DE DONNÉES : solife_contracts & solife (synchronisées)
     # =====================================================================
+    db = client["solife_contracts"]
     target_dbs = [client["solife_contracts"], client["solife"]]
 
     collections_to_clean = [
@@ -517,12 +520,22 @@ def init_contracts_db():
     print("[+] Tous les index créés avec succès.")
 
     # =====================================================================
-    # RÉSUMÉ
+    # RÉSUMÉ & SYNCHRONISATION
     # =====================================================================
+    cols = ["produits", "fonds", "tarifs", "taxes", "contracts", "coverages", "investment_services", "beneficiaires", "avenants", "commissions", "bills", "transactions"]
+
+    # Synchronisation vers la base 'solife' pour compatibilité totale avec tous les workflows
+    db_solife = client["solife"]
+    for col_name in cols:
+        docs = list(db[col_name].find({}, {"_id": 0}))
+        if docs:
+            db_solife[col_name].drop()
+            db_solife[col_name].insert_many(docs)
+    print("[+] Synchronisation effectuée vers la base 'solife'.")
+
     print("\n" + "=" * 65)
     print("  BASE DE DONNÉES solife_contracts INITIALISÉE AVEC SUCCÈS")
     print("=" * 65)
-    cols = ["produits", "fonds", "tarifs", "taxes", "contracts", "coverages", "investment_services", "beneficiaires", "avenants", "commissions", "bills", "transactions"]
     total = 0
     for c in cols:
         count = db[c].count_documents({})

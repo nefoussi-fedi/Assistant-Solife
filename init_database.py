@@ -12,9 +12,11 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 def init_db():
-    mongo_host = os.environ.get("MONGO_HOST", "localhost")
-    mongo_port = int(os.environ.get("MONGO_PORT", 27017))
-    mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/"
+    mongo_uri = os.environ.get("MONGO_URI")
+    if not mongo_uri:
+        mongo_host = os.environ.get("MONGO_HOST", "localhost")
+        mongo_port = int(os.environ.get("MONGO_PORT", 27017))
+        mongo_uri = f"mongodb://{mongo_host}:{mongo_port}/"
 
     print(f"[*] Connexion a MongoDB sur {mongo_uri}...")
     client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
