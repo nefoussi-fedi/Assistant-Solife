@@ -1427,15 +1427,23 @@
           }
 
           const role = userRole;
-          const nom = data.nom || (role === 'client' ? 'Nefoussi Fedi' : 'Collaborateur Solife');
-          const party_id = data.party_id || (role === 'client' ? 'TP-10001' : 'COL-001');
+          const isDorra = username.includes('dorra') || (data.nom && data.nom.includes('Dorra'));
+          const nom = data.nom || (role === 'client' ? (isDorra ? 'Ben Salah Dorra' : 'Nefoussi Fedi') : 'Collaborateur Solife');
+          const party_id = data.party_id || (role === 'client' ? (isDorra ? 'TP-10002' : 'TP-10001') : 'COL-001');
           
           let contracts = data.contracts || [];
           if (role === 'client' && contracts.length === 0) {
-            contracts = [
-              { contract_number: "SOL-2022-7710", produit: "Solife Avenir Épargne", statut: "En vigueur", valeur: "85 400 €" },
-              { contract_number: "SOL-2024-3320", produit: "Solife Plan Retraite Sérénité", statut: "En vigueur", valeur: "32 150 €" }
-            ];
+            if (isDorra) {
+              contracts = [
+                { contract_number: "SOL-2023-5540", produit: "Solife Sérénité Patrimoine", statut: "En vigueur", valeur: "62 800 €" },
+                { contract_number: "SOL-2025-1190", produit: "Solife Protection Santé & Prévoyance", statut: "En vigueur", valeur: "18 500 €" }
+              ];
+            } else {
+              contracts = [
+                { contract_number: "SOL-2022-7710", produit: "Solife Avenir Épargne", statut: "En vigueur", valeur: "85 400 €" },
+                { contract_number: "SOL-2024-3320", produit: "Solife Plan Retraite Sérénité", statut: "En vigueur", valeur: "32 150 €" }
+              ];
+            }
           }
 
           currentUser = { username, role, nom, party_id, contracts };
@@ -1449,7 +1457,7 @@
       } catch(err) {
         // Fallback local sécurisé
         if (password === 'password123') {
-          const isClient = username.includes('fedi') || username.includes('client') || currentRoleTab === 'client';
+          const isClient = username.includes('fedi') || username.includes('dorra') || username.includes('client') || currentRoleTab === 'client';
           const role = isClient ? 'client' : 'collaborateur';
           
           if (currentRoleTab === 'collaborateur' && role === 'client') {
@@ -1461,12 +1469,16 @@
             return;
           }
 
-          const nom = isClient ? 'Nefoussi Fedi' : 'Collaborateur Solife';
-          const party_id = isClient ? 'TP-10001' : 'COL-001';
-          const contracts = isClient ? [
+          const isDorra = username.includes('dorra');
+          const nom = isClient ? (isDorra ? 'Ben Salah Dorra' : 'Nefoussi Fedi') : 'Collaborateur Solife';
+          const party_id = isClient ? (isDorra ? 'TP-10002' : 'TP-10001') : 'COL-001';
+          const contracts = isClient ? (isDorra ? [
+            { contract_number: "SOL-2023-5540", produit: "Solife Sérénité Patrimoine", statut: "En vigueur", valeur: "62 800 €" },
+            { contract_number: "SOL-2025-1190", produit: "Solife Protection Santé & Prévoyance", statut: "En vigueur", valeur: "18 500 €" }
+          ] : [
             { contract_number: "SOL-2022-7710", produit: "Solife Avenir Épargne", statut: "En vigueur", valeur: "85 400 €" },
             { contract_number: "SOL-2024-3320", produit: "Solife Plan Retraite Sérénité", statut: "En vigueur", valeur: "32 150 €" }
-          ] : [];
+          ]) : [];
 
           currentUser = { username, role, nom, party_id, contracts };
           applyRoleInterface(currentUser);

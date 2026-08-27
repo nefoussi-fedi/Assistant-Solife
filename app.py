@@ -277,9 +277,51 @@ def generate_fallback_chat_response(text, payload):
                     f"Avez-vous une question sur l'un de ces points ?"
                 )
 
+        is_dorra = "dorra" in nom.lower() or party_id == "TP-10002" or "dorra" in payload.get("username", "").lower()
+
+        if is_dorra:
+            if "5540" in text_lower or "patrimoine" in text_lower:
+                return (
+                    f"### 🛡️ Fiche Complète du Contrat : Solife Sérénité Patrimoine (n° `SOL-2023-5540`)\n\n"
+                    f"Bonjour Madame {nom}, voici l'ensemble des caractéristiques de votre contrat d'assurance-vie patrimonial :\n\n"
+                    f"#### 📊 Situation Financière & Performance :\n"
+                    f"* **Valeur de rachat actuelle :** **62 800,00 €**\n"
+                    f"* **Cumul des versements effectués :** 55 000,00 €\n"
+                    f"* **Plus-value nette générée :** **+7 800,00 €** (Gain de **+14,18 %**, rendement annuel moyen de **4,80 %**)\n"
+                    f"* **Statut :** En vigueur (souscrit le 20/06/2023)\n\n"
+                    f"#### 📈 Répartition des Supports d'Investissement :\n"
+                    f"* 💶 **Fonds Euros Sécurité (40 %) :** 25 120,00 €\n"
+                    f"* 🤖 **Solife Tech & IA (40 %) :** 25 120,00 €\n"
+                    f"* 🏢 **Solife Immobilier SCPI (20 %) :** 12 560,00 €\n\n"
+                    f"#### 🛡️ Bénéficiaires & Options :\n"
+                    f"* **Bénéficiaires :** M. Ahmed Ben Salah et Mme Fatma Ben Salah (Parents, 50% chacun)\n"
+                    f"* **Options :** Rebalancing automatique trimestriel et sécurisation des plus-values dès +15%."
+                )
+
+            if "1190" in text_lower or "protect" in text_lower or "sant" in text_lower:
+                return (
+                    f"### 🛡️ Fiche Complète du Contrat : Solife Protection Santé & Prévoyance (n° `SOL-2025-1190`)\n\n"
+                    f"Bonjour Madame {nom}, voici le récapitulatif de votre contrat de prévoyance :\n\n"
+                    f"#### 🛡️ Garanties & Couvertures :\n"
+                    f"* **Capital Décès Toutes Causes :** **100 000,00 €** (porté à **200 000,00 €** en cas d'accident)\n"
+                    f"* **Rente Éducation :** **6 000,00 € / an** jusqu'aux 25 ans des enfants\n"
+                    f"* **Valeur d'épargne constituée :** **18 500,00 €** (Versements : 17 000,00 €)\n"
+                    f"* **Prélèvement mensuel :** **150,00 € / mois** (le 1er de chaque mois)\n"
+                    f"* **Bénéficiaires :** Héritiers légaux"
+                )
+
+            if any(k in text_lower for k in ["valeur", "contrat", "combien", "solde", "bilan", "total"]):
+                return (
+                    f"### 📑 Bilan Patrimonial — Madame {nom}\n\n"
+                    f"Vous disposez de **2 contrats actifs** chez Solife pour une valeur totale de **81 300,00 €** :\n\n"
+                    f"1. 🛡️ **Solife Sérénité Patrimoine** (n° `SOL-2023-5540`) : **62 800,00 €** (+7 800 € de plus-value)\n"
+                    f"2. 🛡️ **Solife Protection Santé & Prévoyance** (n° `SOL-2025-1190`) : **18 500,00 €** (Capital garanti 100k€)\n\n"
+                    f"Avez-vous une question spécifique sur l'un de vos contrats ?"
+                )
+
         # Fallback générique client
         return (
-            f"Monsieur {nom}, votre conseiller Solife est à votre disposition. "
+            f"Madame/Monsieur {nom}, votre conseiller Solife est à votre disposition. "
             f"Vos contrats sont consultables directement dans le panneau latéral gauche. "
             f"Vous pouvez me poser des questions sur vos garanties, vos bénéficiaires, vos prélèvements ou vos valeurs de rachat."
         )
@@ -436,6 +478,13 @@ DEMO_USERS = {
         "nom": "Nefoussi Fedi",
         "party_id": "TP-10001",
         "email": "fedi.nefoussi@solife.com"
+    },
+    "dorra.bensalah": {
+        "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
+        "role": "client",
+        "nom": "Ben Salah Dorra",
+        "party_id": "TP-10002",
+        "email": "dorra.bensalah@solife.com"
     },
     "collaborateur": {
         "password_hash": "ef92b778bafe771e89245b89ecbc08a44a4e166c06659911881f383d4473e94f",
