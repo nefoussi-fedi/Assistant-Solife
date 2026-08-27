@@ -122,7 +122,8 @@
     },
     {
       "parameters": {
-        "sessionIdType": "fromInput",
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.body && $json.body.sessionId ? $json.body.sessionId : ($json.sessionId ? $json.sessionId : 'session_solife') }}",
         "collectionName": "chat_histories",
         "databaseName": "solife"
       },
@@ -143,7 +144,9 @@
     },
     {
       "parameters": {
+        "httpMethod": "POST",
         "path": "solife",
+        "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
@@ -173,7 +176,7 @@
     },
     {
       "parameters": {
-        "modelName": "models/gemini-3.1-flash-lite",
+        "modelName": "models/gemini-2.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
