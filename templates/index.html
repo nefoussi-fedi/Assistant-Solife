@@ -7,6 +7,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Solife — Assistant Intelligent Assurance-Vie</title>
+<!-- Marked.js Markdown Parser & DOMPurify -->
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.2/dist/purify.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -766,52 +769,242 @@
     border: 1px solid var(--border);
     color: var(--white);
   }
+  /* Message Bubble Typography & Markdown Rendering */
   .msg-bubble {
-    padding: 13px 18px;
-    border-radius: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
     font-size: 13.5px;
-    line-height: 1.6;
+    line-height: 1.65;
     max-width: 780px;
     word-break: break-word;
+    letter-spacing: 0.1px;
   }
   .msg-row.bot .msg-bubble {
     background: var(--panel);
     border: 1px solid var(--border);
-    color: var(--white);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    color: #ede8ee;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
   }
   .msg-row.user .msg-bubble {
     background: linear-gradient(135deg, var(--red), var(--violet));
-    color: white;
-    border-radius: 12px 12px 2px 12px;
-    box-shadow: 0 4px 15px rgba(234,59,82,0.25);
+    color: #ffffff;
+    border-radius: 14px 14px 2px 14px;
+    box-shadow: 0 6px 20px rgba(234,59,82,0.28);
   }
-  .msg-bubble p { margin: 0 0 10px; }
-  .msg-bubble p:last-child { margin-bottom: 0; }
-  .msg-bubble ul, .msg-bubble ol { margin: 6px 0 10px 20px; padding: 0; }
-  .msg-bubble li { margin-bottom: 4px; }
+
+  /* Markdown Headings */
+  .msg-bubble h1,
+  .msg-bubble h2,
+  .msg-bubble h3,
+  .msg-bubble h4,
+  .msg-bubble h5,
+  .msg-bubble h6 {
+    margin: 14px 0 8px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--white);
+  }
+  .msg-bubble > h1:first-child,
+  .msg-bubble > h2:first-child,
+  .msg-bubble > h3:first-child,
+  .msg-bubble > h4:first-child,
+  .msg-bubble > h5:first-child,
+  .msg-bubble > h6:first-child {
+    margin-top: 0;
+  }
+  .msg-bubble h1 {
+    font-size: 16.5px;
+    background: linear-gradient(135deg, #ffffff 40%, #e2d4fa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(245,240,242,0.12);
+  }
+  .msg-bubble h2 {
+    font-size: 15.5px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(245,240,242,0.08);
+  }
+  .msg-bubble h3 {
+    font-size: 14.5px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(245,240,242,0.08);
+  }
+  .msg-bubble h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #c4b5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 12px 0 6px;
+  }
+  .msg-bubble h5,
+  .msg-bubble h6 {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* Paragraphs and Text Elements */
+  .msg-bubble p {
+    margin: 0 0 10px;
+    line-height: 1.65;
+  }
+  .msg-bubble p:last-child {
+    margin-bottom: 0;
+  }
+  .msg-bubble strong,
+  .msg-bubble b {
+    color: #ffffff;
+    font-weight: 700;
+  }
+  .msg-bubble em,
+  .msg-bubble i {
+    color: #d8cfe0;
+    font-style: italic;
+  }
+
+  /* Markdown Lists */
+  .msg-bubble ul,
+  .msg-bubble ol {
+    margin: 8px 0 12px;
+    padding-left: 0;
+  }
+  .msg-bubble ul {
+    list-style: none;
+  }
+  .msg-bubble ul > li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 6px;
+    line-height: 1.55;
+  }
+  .msg-bubble ul > li::before {
+    content: "•";
+    position: absolute;
+    left: 4px;
+    top: -1px;
+    color: var(--red);
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .msg-row.user .msg-bubble ul > li::before {
+    color: #ffffff;
+  }
+  .msg-bubble ol {
+    list-style-type: decimal;
+    padding-left: 20px;
+  }
+  .msg-bubble ol > li {
+    margin-bottom: 6px;
+    line-height: 1.55;
+    padding-left: 4px;
+  }
+  .msg-bubble li > ul,
+  .msg-bubble li > ol {
+    margin: 4px 0 4px;
+    padding-left: 14px;
+  }
+  .msg-bubble li > ul > li::before {
+    content: "◦";
+    color: var(--violet);
+    font-size: 14px;
+    top: 0;
+  }
+
+  /* Horizontal Dividers */
+  .msg-bubble hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(234,59,82,0.45), rgba(155,92,246,0.45), transparent);
+    margin: 14px 0;
+  }
+
+  /* Tables */
   .msg-bubble table {
     width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-    font-size: 12.5px;
-  }
-  .msg-bubble th, .msg-bubble td {
-    padding: 7px 10px;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 12px 0;
+    font-size: 12px;
+    border-radius: 8px;
+    overflow: hidden;
     border: 1px solid var(--border);
-    text-align: left;
+    background: var(--panel-2);
   }
   .msg-bubble th {
-    background: var(--panel-2);
+    background: rgba(155,92,246,0.18);
     color: var(--white);
-    font-weight: 600;
+    font-weight: 700;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    white-space: nowrap;
   }
+  .msg-bubble td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(245,240,242,0.05);
+    color: #ede8ee;
+  }
+  .msg-bubble tr:last-child td {
+    border-bottom: none;
+  }
+  .msg-bubble tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+  .msg-bubble tr:hover td {
+    background: rgba(155,92,246,0.08);
+  }
+
+  /* Inline Code & Code Blocks */
   .msg-bubble code {
-    background: rgba(0,0,0,0.35);
-    padding: 2px 6px;
-    border-radius: 4px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(245,240,242,0.1);
+    color: #f472b6;
+    padding: 2px 7px;
+    border-radius: 5px;
     font-size: 12px;
-    font-family: monospace;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .msg-bubble pre {
+    background: #0f0913;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 10px 0;
+  }
+  .msg-bubble pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: #ede8ee;
+    font-size: 12px;
+  }
+
+  /* Blockquotes */
+  .msg-bubble blockquote {
+    margin: 10px 0;
+    padding: 8px 14px;
+    border-left: 3px solid var(--violet);
+    background: rgba(155,92,246,0.08);
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: #d8cfe0;
+  }
+
+  /* Links */
+  .msg-bubble a {
+    color: #a78bfa;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.15s ease;
+  }
+  .msg-bubble a:hover {
+    color: #c4b5fd;
   }
   .typing-indicator {
     display: none;
@@ -1363,17 +1556,146 @@
     }
   }
 
-  // Format Markdown-like text to HTML
+  // Comprehensive Markdown Parser with Marked.js + Robust Offline Fallback
   function formatMarkdown(text) {
-    if (!text) return '';
-    let html = text
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-      .replace(/\*(.*?)\*/g, '<i>$1</i>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\n/g, '<br>');
-    return '<p>' + html + '</p>';
+    if (!text || typeof text !== 'string') return '';
+
+    const cleanText = text.trim();
+
+    // 1. If marked.js is available (from CDN)
+    if (typeof marked !== 'undefined') {
+      try {
+        if (typeof marked.setOptions === 'function') {
+          marked.setOptions({
+            gfm: true,
+            breaks: true,
+            pedantic: false
+          });
+        }
+        let parsed = (typeof marked.parse === 'function') ? marked.parse(cleanText) : marked(cleanText);
+        if (typeof DOMPurify !== 'undefined') {
+          return DOMPurify.sanitize(parsed);
+        }
+        return parsed;
+      } catch (err) {
+        console.warn('Marked.js error, using fallback parser:', err);
+      }
+    }
+
+    // 2. High-Performance Fallback Markdown Parser (Works 100% Offline)
+    return parseMarkdownFallback(cleanText);
+  }
+
+  function parseMarkdownFallback(src) {
+    if (!src) return '';
+
+    // Step A: Escape HTML entities
+    let str = src
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Step B: Code Blocks ```code```
+    const codeBlocks = [];
+    str = str.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, function(match, lang, code) {
+      const id = `__CODE_BLOCK_${codeBlocks.length}__`;
+      codeBlocks.push(`<pre><code class="language-${lang}">${code.trim()}</code></pre>`);
+      return id;
+    });
+
+    // Step C: Inline code `code`
+    const inlineCodes = [];
+    str = str.replace(/`([^`]+)`/g, function(match, code) {
+      const id = `__INLINE_CODE_${inlineCodes.length}__`;
+      inlineCodes.push(`<code>${code}</code>`);
+      return id;
+    });
+
+    // Step D: Horizontal Rules (--- or *** or ___)
+    str = str.replace(/^(?:---|\*\*\*|___)\s*$/gm, '<hr>');
+
+    // Step E: Headers (# to ######)
+    str = str.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
+    str = str.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
+    str = str.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
+    str = str.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+    str = str.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+    str = str.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
+
+    // Step F: Tables (| Col 1 | Col 2 |)
+    str = str.replace(/((?:\|[^\n]+\|\r?\n)+)/g, function(tableBlock) {
+      const lines = tableBlock.trim().split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
+      if (lines.length >= 2 && /^[|:\s-]+$/.test(lines[1])) {
+        const headerCols = lines[0].split('|').slice(1, -1).map(c => c.trim());
+        const bodyLines = lines.slice(2);
+
+        let tableHtml = '<table><thead><tr>';
+        headerCols.forEach(col => {
+          tableHtml += `<th>${col}</th>`;
+        });
+        tableHtml += '</tr></thead><tbody>';
+
+        bodyLines.forEach(row => {
+          const cols = row.split('|').slice(1, -1).map(c => c.trim());
+          if (cols.length > 0) {
+            tableHtml += '<tr>';
+            cols.forEach(c => {
+              tableHtml += `<td>${c}</td>`;
+            });
+            tableHtml += '</tr>';
+          }
+        });
+        tableHtml += '</tbody></table>';
+        return tableHtml;
+      }
+      return tableBlock;
+    });
+
+    // Step G: Blockquotes (> quote)
+    str = str.replace(/^\>\s+(.+)$/gm, '<blockquote>$1</blockquote>');
+
+    // Step H: Lists (Unordered & Ordered)
+    str = str.replace(/^[ \t]{2,}[*+-]\s+(.+)$/gm, '<li class="nested-li">$1</li>');
+    str = str.replace(/^[ \t]{2,}\d+\.\s+(.+)$/gm, '<li class="nested-li-num">$1</li>');
+    str = str.replace(/^[*+-]\s+(.+)$/gm, '<li>$1</li>');
+    str = str.replace(/^\d+\.\s+(.+)$/gm, '<oli>$1</oli>');
+
+    str = str.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>');
+    str = str.replace(/((?:<oli>.*<\/oli>\s*)+)/g, function(match) {
+      return '<ol>' + match.replace(/<oli>/g, '<li>').replace(/<\/oli>/g, '</li>') + '</ol>';
+    });
+
+    // Step I: Bold & Italic
+    str = str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    str = str.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    str = str.replace(/(^|[^\*])\*([^\*\s][^\*]*[^\*\s]|[^\*\s])\*(?!\*)/g, '$1<em>$2</em>');
+    str = str.replace(/(^|[^_])_([^_]+)_(?!_)/g, '$1<em>$2</em>');
+
+    // Step J: Links [label](url)
+    str = str.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+    // Step K: Paragraphs and Line Breaks
+    const blocks = str.split(/\n\n+/);
+    const parsedBlocks = blocks.map(block => {
+      block = block.trim();
+      if (!block) return '';
+      if (/^(<h[1-6]|<ul|<ol|<table|<pre|<blockquote|<hr)/i.test(block)) {
+        return block;
+      }
+      return '<p>' + block.replace(/\n/g, '<br>') + '</p>';
+    });
+
+    str = parsedBlocks.join('');
+
+    // Step L: Restore Code Blocks & Inline Codes
+    inlineCodes.forEach((code, idx) => {
+      str = str.replace(`__INLINE_CODE_${idx}__`, code);
+    });
+    codeBlocks.forEach((block, idx) => {
+      str = str.replace(`__CODE_BLOCK_${idx}__`, block);
+    });
+
+    return str;
   }
 
   // Native Solife Chat Engine
