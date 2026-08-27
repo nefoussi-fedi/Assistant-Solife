@@ -7,9 +7,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Solife — Assistant Intelligent Assurance-Vie</title>
-<!-- Marked.js Markdown Parser & DOMPurify -->
-<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.2/dist/purify.min.js"></script>
+<!-- Marked.js Markdown Parser & DOMPurify (Local + CDN Fallback) -->
+<script src="{{ url_for('static', filename='marked.min.js') }}"></script>
+<script src="{{ url_for('static', filename='purify.min.js') }}"></script>
+<script>
+  if (typeof marked === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"><\/script>');
+  }
+  if (typeof DOMPurify === 'undefined') {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.2/dist/purify.min.js"><\/script>');
+  }
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
@@ -792,79 +800,105 @@
     box-shadow: 0 6px 20px rgba(234,59,82,0.28);
   }
 
-  /* Markdown Headings */
+  /* Markdown Headings - Distinct Sizes, Banners and Colors */
   .msg-bubble h1,
   .msg-bubble h2,
   .msg-bubble h3,
   .msg-bubble h4,
   .msg-bubble h5,
   .msg-bubble h6 {
-    margin: 14px 0 8px;
-    font-weight: 700;
+    font-family: inherit;
     line-height: 1.35;
-    color: var(--white);
+    margin: 16px 0 10px 0;
   }
-  .msg-bubble > h1:first-child,
-  .msg-bubble > h2:first-child,
-  .msg-bubble > h3:first-child,
-  .msg-bubble > h4:first-child,
-  .msg-bubble > h5:first-child,
-  .msg-bubble > h6:first-child {
-    margin-top: 0;
-  }
-  .msg-bubble h1 {
-    font-size: 16.5px;
-    background: linear-gradient(135deg, #ffffff 40%, #e2d4fa 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(245,240,242,0.12);
-  }
-  .msg-bubble h2 {
-    font-size: 15.5px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid rgba(245,240,242,0.08);
-  }
-  .msg-bubble h3 {
-    font-size: 14.5px;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px solid rgba(245,240,242,0.08);
-  }
-  .msg-bubble h4 {
-    font-size: 13px;
-    font-weight: 700;
-    color: #c4b5fd;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin: 12px 0 6px;
-  }
-  .msg-bubble h5,
-  .msg-bubble h6 {
-    font-size: 12.5px;
-    color: var(--muted);
+  .msg-bubble > *:first-child {
+    margin-top: 0 !important;
   }
 
-  /* Paragraphs and Text Elements */
+  /* Titre Principal H1 */
+  .msg-bubble h1 {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #ffffff 50%, #fca5a5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(234,59,82,0.4);
+    letter-spacing: -0.3px;
+  }
+
+  /* Titre de Section H2 */
+  .msg-bubble h2 {
+    font-size: 18px !important;
+    font-weight: 750 !important;
+    color: #ffffff !important;
+    padding-left: 10px;
+    border-left: 4px solid var(--red);
+    letter-spacing: -0.2px;
+  }
+
+  /* Titre de Contrat / Carte H3 - Bannière très distincte */
+  .msg-bubble h3 {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, rgba(155,92,246,0.22), rgba(234,59,82,0.16)) !important;
+    border: 1px solid rgba(155,92,246,0.35) !important;
+    border-left: 4px solid var(--violet) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    margin: 16px 0 12px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25) !important;
+    letter-spacing: 0px;
+  }
+
+  /* Sous-titre H4 - Rubriques métier */
+  .msg-bubble h4 {
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    color: #fca5a5 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.7px !important;
+    margin: 16px 0 8px 0 !important;
+    padding-bottom: 5px !important;
+    border-bottom: 1px dashed rgba(245,240,242,0.18) !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .msg-bubble h5,
+  .msg-bubble h6 {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #c4b5fd !important;
+    margin: 12px 0 6px 0 !important;
+  }
+
+  /* Paragraphes normaux - Taille et couleur distinctes */
   .msg-bubble p {
-    margin: 0 0 10px;
-    line-height: 1.65;
+    font-size: 13.5px !important;
+    font-weight: 400 !important;
+    color: #d8cfe0 !important;
+    margin: 0 0 10px 0 !important;
+    line-height: 1.65 !important;
   }
   .msg-bubble p:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
   }
   .msg-bubble strong,
   .msg-bubble b {
-    color: #ffffff;
-    font-weight: 700;
+    color: #ffffff !important;
+    font-weight: 700 !important;
   }
   .msg-bubble em,
   .msg-bubble i {
-    color: #d8cfe0;
-    font-style: italic;
+    color: #d8cfe0 !important;
+    font-style: italic !important;
   }
 
   /* Markdown Lists */
@@ -1556,13 +1590,22 @@
     }
   }
 
-  // Comprehensive Markdown Parser with Marked.js + Robust Offline Fallback
+  // Comprehensive Markdown Parser with Marked.js + Robust Fallback
   function formatMarkdown(text) {
     if (!text || typeof text !== 'string') return '';
 
-    const cleanText = text.trim();
+    let cleanText = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
 
-    // 1. If marked.js is available (from CDN)
+    // Clean stray trailing asterisk at end of lines
+    cleanText = cleanText.replace(/([^\*\s])\*+(\s*)$/gm, '$1$2');
+
+    // Normalize spacing around headers and list items
+    cleanText = cleanText
+      .replace(/([^\n])\n(#{1,6}\s+)/g, '$1\n\n$2')
+      .replace(/(#{1,6}\s+[^\n]+)\n([^\n#])/g, '$1\n\n$2')
+      .replace(/([^\n])\n(\s*---|\*\*\*|___\s*)/g, '$1\n\n$2');
+
+    // 1. If marked.js is available
     if (typeof marked !== 'undefined') {
       try {
         if (typeof marked.setOptions === 'function') {
@@ -1589,8 +1632,10 @@
   function parseMarkdownFallback(src) {
     if (!src) return '';
 
+    let str = src.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+
     // Step A: Escape HTML entities
-    let str = src
+    str = str
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;');
@@ -1611,10 +1656,13 @@
       return id;
     });
 
-    // Step D: Horizontal Rules (--- or *** or ___)
+    // Step D: Clean trailing lone asterisks
+    str = str.replace(/([^\*\s])\*+(\s*)$/gm, '$1$2');
+
+    // Step E: Horizontal Rules (--- or *** or ___)
     str = str.replace(/^(?:---|\*\*\*|___)\s*$/gm, '<hr>');
 
-    // Step E: Headers (# to ######)
+    // Step F: Headers (# to ######)
     str = str.replace(/^######\s+(.+)$/gm, '<h6>$1</h6>');
     str = str.replace(/^#####\s+(.+)$/gm, '<h5>$1</h5>');
     str = str.replace(/^####\s+(.+)$/gm, '<h4>$1</h4>');
@@ -1622,7 +1670,7 @@
     str = str.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
     str = str.replace(/^#\s+(.+)$/gm, '<h1>$1</h1>');
 
-    // Step F: Tables (| Col 1 | Col 2 |)
+    // Step G: Tables (| Col 1 | Col 2 |)
     str = str.replace(/((?:\|[^\n]+\|\r?\n)+)/g, function(tableBlock) {
       const lines = tableBlock.trim().split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
       if (lines.length >= 2 && /^[|:\s-]+$/.test(lines[1])) {
@@ -1651,30 +1699,31 @@
       return tableBlock;
     });
 
-    // Step G: Blockquotes (> quote)
+    // Step H: Blockquotes (> quote)
     str = str.replace(/^\>\s+(.+)$/gm, '<blockquote>$1</blockquote>');
 
-    // Step H: Lists (Unordered & Ordered)
+    // Step I: Lists (Unordered & Ordered)
     str = str.replace(/^[ \t]{2,}[*+-]\s+(.+)$/gm, '<li class="nested-li">$1</li>');
     str = str.replace(/^[ \t]{2,}\d+\.\s+(.+)$/gm, '<li class="nested-li-num">$1</li>');
     str = str.replace(/^[*+-]\s+(.+)$/gm, '<li>$1</li>');
     str = str.replace(/^\d+\.\s+(.+)$/gm, '<oli>$1</oli>');
 
-    str = str.replace(/((?:<li>.*<\/li>\s*)+)/g, '<ul>$1</ul>');
+    str = str.replace(/((?:<li(?: class="[^"]*")?>.*?<\/li>\s*)+)/g, '<ul>$1</ul>');
     str = str.replace(/((?:<oli>.*<\/oli>\s*)+)/g, function(match) {
       return '<ol>' + match.replace(/<oli>/g, '<li>').replace(/<\/oli>/g, '</li>') + '</ol>';
     });
 
-    // Step I: Bold & Italic
+    // Step J: Bold & Italic
+    str = str.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
     str = str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     str = str.replace(/__(.*?)__/g, '<strong>$1</strong>');
-    str = str.replace(/(^|[^\*])\*([^\*\s][^\*]*[^\*\s]|[^\*\s])\*(?!\*)/g, '$1<em>$2</em>');
+    str = str.replace(/(?<!\*)\*([^\*\s][^\*]*[^\*\s]|[^\*\s])\*(?!\*)/g, '<em>$1</em>');
     str = str.replace(/(^|[^_])_([^_]+)_(?!_)/g, '$1<em>$2</em>');
 
-    // Step J: Links [label](url)
+    // Step K: Links [label](url)
     str = str.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
-    // Step K: Paragraphs and Line Breaks
+    // Step L: Paragraphs and Line Breaks
     const blocks = str.split(/\n\n+/);
     const parsedBlocks = blocks.map(block => {
       block = block.trim();
@@ -1687,7 +1736,7 @@
 
     str = parsedBlocks.join('');
 
-    // Step L: Restore Code Blocks & Inline Codes
+    // Step M: Restore Code Blocks & Inline Codes
     inlineCodes.forEach((code, idx) => {
       str = str.replace(`__INLINE_CODE_${idx}__`, code);
     });
