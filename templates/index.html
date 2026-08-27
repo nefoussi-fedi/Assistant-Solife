@@ -1563,16 +1563,20 @@
         });
       }
 
-      // 4. Client Suggested Questions
+      // 4. Client Suggested Questions (11 catégories de questions)
       if (suggestedQuestions) {
         suggestedQuestions.innerHTML = `
           <li onclick="askQuestion(this)">💰 Combien ai-je gagné par rapport à mes versements ?</li>
-          <li onclick="askQuestion(this)">📊 Quelle est la valeur totale de mes contrats ?</li>
-          <li onclick="askQuestion(this)">🛡️ Qui sont les bénéficiaires en cas de décès ?</li>
-          <li onclick="askQuestion(this)">📈 Quelle est la répartition de mon épargne (Fonds Euros vs UC) ?</li>
-          <li onclick="askQuestion(this)">💳 Quel est le montant et la date de mon prochain prélèvement ?</li>
-          <li onclick="askQuestion(this)">🔄 Mon contrat dispose-t-il du rebalancing automatique ?</li>
-          <li onclick="askQuestion(this)">📑 Fais-moi un bilan complet de ma situation Solife</li>
+          <li onclick="askQuestion(this)">📊 Quelle est la valeur et le rendement de mon contrat ?</li>
+          <li onclick="askQuestion(this)">💸 Quelle est la différence entre un rachat partiel et total ?</li>
+          <li onclick="askQuestion(this)">🛡️ Qui sont les bénéficiaires et puis-je les modifier ?</li>
+          <li onclick="askQuestion(this)">📈 Sur quels supports mon épargne est-elle investie ?</li>
+          <li onclick="askQuestion(this)">⚖️ Quels sont les frais appliqués à mon contrat ?</li>
+          <li onclick="askQuestion(this)">💎 Qu'est-ce que la participation aux bénéfices ?</li>
+          <li onclick="askQuestion(this)">📄 Quels documents et relevés sont disponibles ?</li>
+          <li onclick="askQuestion(this)">📜 Quelle est ma dernière opération et versement ?</li>
+          <li onclick="askQuestion(this)">🔍 Pourquoi la valeur de mon contrat a-t-elle évolué ?</li>
+          <li onclick="askQuestion(this)">🏆 Quel support a le plus contribué à ma performance ?</li>
         `;
       }
 
